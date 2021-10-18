@@ -1,0 +1,8 @@
+---
+applications:
+ - name: Boids
+   random-route: true
+   memory: 128M
+   env:
+    CF_STAGING_TIMEOUT: 45
+    CF_STARTUP_TIMEOUT: 45
