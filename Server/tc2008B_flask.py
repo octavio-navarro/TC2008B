@@ -39,10 +39,16 @@ app = Flask("Boids example")
 def boidsPosition():
     if request.method == 'GET':
         positions = updatePositions(flock)
-        # resp = "{\"data\":" + positionsToJSON(positions) + "}"
         return positionsToJSON(positions)
     elif request.method == 'POST':
         return "Post request from Boids example\n"
+
+@app.route('/init', methods=['POST', 'GET'])
+def boidsTest():
+    if request.method == 'GET':
+        return jsonify({"num_agents":30, "w": 30, "h": 30})
+    elif request.method == 'POST':
+        return "Post request from init\n"
 
 if __name__=='__main__':
     app.run(host="localhost", port=8585, debug=True)

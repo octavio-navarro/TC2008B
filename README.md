@@ -161,7 +161,9 @@ cf push
 
 # TO DO
 
-- [ ] Add the mesa code instead of the Boids code.
+- [ x ] Add the mesa code instead of the Boids code.
+- [ x ] Check synchronization, clients, maybe in the cloud, most likely in flask
+- [ ] Check cloud documentation or ask for a course? Instances, connections, etc.
 
 # Dependencies
 
