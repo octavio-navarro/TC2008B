@@ -30,6 +30,7 @@ public class AgentController : MonoBehaviour
     string updateEndpoint = "/update";
     AgentData carsData, obstacleData;
     GameObject[] agents;
+    List<Vector3> oldPositions;
     List<Vector3> newPositions;
 
     public GameObject carPrefab, obstaclePrefab, floor;
@@ -40,6 +41,7 @@ public class AgentController : MonoBehaviour
     {
         carsData = new AgentData();
         obstacleData = new AgentData();
+        oldPositions = new List<Vector3>();
         newPositions = new List<Vector3>();
 
         agents = new GameObject[NAgents];
@@ -66,14 +68,14 @@ public class AgentController : MonoBehaviour
             StartCoroutine(updateSimulation());
         }
 
-        if (newPositions.Count > 1)
+        if (oldPositions.Count > 1)
         {
             for (int s = 0; s < agents.Length; s++)
             {
-                Vector3 interpolated = Vector3.Lerp(agents[s].transform.position, newPositions[s], dt);
+                Vector3 interpolated = Vector3.Lerp(oldPositions[s], newPositions[s], dt);
                 agents[s].transform.localPosition = interpolated;
                 
-                Vector3 dir = agents[s].transform.position - newPositions[s];
+                Vector3 dir = oldPositions[s] - newPositions[s];
                 agents[s].transform.rotation = Quaternion.LookRotation(dir);
                 
             }
@@ -131,6 +133,9 @@ public class AgentController : MonoBehaviour
         else 
         {
             carsData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+
+            // Store the old positions for each agent
+            oldPositions = new List<Vector3>(newPositions);
 
             newPositions.Clear();
 
