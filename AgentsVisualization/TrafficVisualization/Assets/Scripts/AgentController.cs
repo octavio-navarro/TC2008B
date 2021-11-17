@@ -15,7 +15,7 @@ public class CarData
     public Vector3 position;
 }
 
-public class agentData
+public class AgentData
 {
     public List<Vector3> positions;
 }
@@ -23,18 +23,23 @@ public class agentData
 public class AgentController : MonoBehaviour
 {
     // private string url = "https://boids.us-south.cf.appdomain.cloud/";
-    private string getAgentsUrl = "http://localhost:8585/getAgents", getObstaclesUrl = "http://localhost:8585/getObstacles", sendConfigUrl = "http://localhost:8585/init", updateUrl = "http://localhost:8585/update";
-    private agentData carsData, obstacleData;
+    string serverUrl = "http://localhost:8585";
+    string getAgentsEndpoint = "/getAgents";
+    string getObstaclesEndpoint = "/getObstacles";
+    string sendConfigEndpoint = "/init";
+    string updateEndpoint = "/update";
+    AgentData carsData, obstacleData;
+    GameObject[] agents;
+    List<Vector3> newPositions;
+
     public GameObject carPrefab, obstaclePrefab, floor;
     public int NAgents, width, height;
-    GameObject[] agents;
     public float timeToUpdate = 5.0f, timer, dt;
-    List<Vector3> newPositions;
 
     void Start()
     {
-        carsData = new agentData();
-        obstacleData = new agentData();
+        carsData = new AgentData();
+        obstacleData = new AgentData();
         newPositions = new List<Vector3>();
 
         agents = new GameObject[NAgents];
@@ -71,14 +76,15 @@ public class AgentController : MonoBehaviour
                 Vector3 dir = agents[s].transform.position - newPositions[s];
                 agents[s].transform.rotation = Quaternion.LookRotation(dir);
                 
-                timer += Time.deltaTime;
             }
+            // Move time from the last frame
+            timer += Time.deltaTime;
         }
     }
  
     IEnumerator updateSimulation()
     {
-        UnityWebRequest www = UnityWebRequest.Get(updateUrl);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + updateEndpoint);
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
@@ -88,6 +94,7 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetCarsData());
         }
     }
+
     IEnumerator sendConfiguration()
     {
         WWWForm form = new WWWForm();
@@ -96,7 +103,7 @@ public class AgentController : MonoBehaviour
         form.AddField("width", width.ToString());
         form.AddField("height", height.ToString());
 
-        UnityWebRequest www = UnityWebRequest.Post(sendConfigUrl, form);
+        UnityWebRequest www = UnityWebRequest.Post(serverUrl + sendConfigEndpoint, form);
         www.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
         yield return www.SendWebRequest();
@@ -113,16 +120,17 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetObstacleData());
         }
     }
+
     IEnumerator GetCarsData() 
     {
-        UnityWebRequest www = UnityWebRequest.Get(getAgentsUrl);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getAgentsEndpoint);
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
         else 
         {
-            carsData = JsonUtility.FromJson<agentData>(www.downloadHandler.text);
+            carsData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
 
             newPositions.Clear();
 
@@ -133,14 +141,14 @@ public class AgentController : MonoBehaviour
 
     IEnumerator GetObstacleData() 
     {
-        UnityWebRequest www = UnityWebRequest.Get(getObstaclesUrl);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getObstaclesEndpoint);
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
         else 
         {
-            obstacleData = JsonUtility.FromJson<agentData>(www.downloadHandler.text);
+            obstacleData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
 
             Debug.Log(obstacleData.positions);
 
