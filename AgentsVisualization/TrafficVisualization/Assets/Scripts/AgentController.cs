@@ -32,6 +32,8 @@ public class AgentController : MonoBehaviour
     GameObject[] agents;
     List<Vector3> oldPositions;
     List<Vector3> newPositions;
+    // Pause the simulation while we get the update from the server
+    bool hold = false;
 
     public GameObject carPrefab, obstaclePrefab, floor;
     public int NAgents, width, height;
@@ -54,21 +56,23 @@ public class AgentController : MonoBehaviour
         for(int i = 0; i < NAgents; i++)
             agents[i] = Instantiate(carPrefab, Vector3.zero, Quaternion.identity);
             
-        StartCoroutine(sendConfiguration());
+        StartCoroutine(SendConfiguration());
     }
 
     private void Update() 
     {
         float t = timer/timeToUpdate;
+        // Smooth out the transition at start and end
         dt = t * t * ( 3f - 2f*t);
 
         if(timer >= timeToUpdate)
         {
             timer = 0;
-            StartCoroutine(updateSimulation());
+            hold = true;
+            StartCoroutine(UpdateSimulation());
         }
 
-        if (oldPositions.Count > 1)
+        if (!hold)
         {
             for (int s = 0; s < agents.Length; s++)
             {
@@ -84,7 +88,7 @@ public class AgentController : MonoBehaviour
         }
     }
  
-    IEnumerator updateSimulation()
+    IEnumerator UpdateSimulation()
     {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + updateEndpoint);
         yield return www.SendWebRequest();
@@ -97,7 +101,7 @@ public class AgentController : MonoBehaviour
         }
     }
 
-    IEnumerator sendConfiguration()
+    IEnumerator SendConfiguration()
     {
         WWWForm form = new WWWForm();
 
@@ -141,6 +145,8 @@ public class AgentController : MonoBehaviour
 
             foreach(Vector3 v in carsData.positions)
                 newPositions.Add(v);
+
+            hold = false;
         }
     }
 
