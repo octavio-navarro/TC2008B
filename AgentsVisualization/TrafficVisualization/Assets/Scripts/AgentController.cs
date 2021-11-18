@@ -15,7 +15,7 @@ public class CarData
     public Vector3 position;
 }
 
-public class agentData
+public class AgentData
 {
     public List<Vector3> positions;
 }
@@ -23,18 +23,27 @@ public class agentData
 public class AgentController : MonoBehaviour
 {
     // private string url = "https://boids.us-south.cf.appdomain.cloud/";
-    private string getAgentsUrl = "http://localhost:8585/getAgents", getObstaclesUrl = "http://localhost:8585/getObstacles", sendConfigUrl = "http://localhost:8585/init", updateUrl = "http://localhost:8585/update";
-    private agentData carsData, obstacleData;
+    string serverUrl = "http://localhost:8585";
+    string getAgentsEndpoint = "/getAgents";
+    string getObstaclesEndpoint = "/getObstacles";
+    string sendConfigEndpoint = "/init";
+    string updateEndpoint = "/update";
+    AgentData carsData, obstacleData;
+    GameObject[] agents;
+    List<Vector3> oldPositions;
+    List<Vector3> newPositions;
+    // Pause the simulation while we get the update from the server
+    bool hold = false;
+
     public GameObject carPrefab, obstaclePrefab, floor;
     public int NAgents, width, height;
-    GameObject[] agents;
     public float timeToUpdate = 5.0f, timer, dt;
-    List<Vector3> newPositions;
 
     void Start()
     {
-        carsData = new agentData();
-        obstacleData = new agentData();
+        carsData = new AgentData();
+        obstacleData = new AgentData();
+        oldPositions = new List<Vector3>();
         newPositions = new List<Vector3>();
 
         agents = new GameObject[NAgents];
@@ -47,38 +56,41 @@ public class AgentController : MonoBehaviour
         for(int i = 0; i < NAgents; i++)
             agents[i] = Instantiate(carPrefab, Vector3.zero, Quaternion.identity);
             
-        StartCoroutine(sendConfiguration());
+        StartCoroutine(SendConfiguration());
     }
 
     private void Update() 
     {
         float t = timer/timeToUpdate;
+        // Smooth out the transition at start and end
         dt = t * t * ( 3f - 2f*t);
 
         if(timer >= timeToUpdate)
         {
             timer = 0;
-            StartCoroutine(updateSimulation());
+            hold = true;
+            StartCoroutine(UpdateSimulation());
         }
 
-        if (newPositions.Count > 1)
+        if (!hold)
         {
             for (int s = 0; s < agents.Length; s++)
             {
-                Vector3 interpolated = Vector3.Lerp(agents[s].transform.position, newPositions[s], dt);
+                Vector3 interpolated = Vector3.Lerp(oldPositions[s], newPositions[s], dt);
                 agents[s].transform.localPosition = interpolated;
                 
-                Vector3 dir = agents[s].transform.position - newPositions[s];
+                Vector3 dir = oldPositions[s] - newPositions[s];
                 agents[s].transform.rotation = Quaternion.LookRotation(dir);
                 
-                timer += Time.deltaTime;
             }
+            // Move time from the last frame
+            timer += Time.deltaTime;
         }
     }
  
-    IEnumerator updateSimulation()
+    IEnumerator UpdateSimulation()
     {
-        UnityWebRequest www = UnityWebRequest.Get(updateUrl);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + updateEndpoint);
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
@@ -88,7 +100,8 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetCarsData());
         }
     }
-    IEnumerator sendConfiguration()
+
+    IEnumerator SendConfiguration()
     {
         WWWForm form = new WWWForm();
 
@@ -96,7 +109,7 @@ public class AgentController : MonoBehaviour
         form.AddField("width", width.ToString());
         form.AddField("height", height.ToString());
 
-        UnityWebRequest www = UnityWebRequest.Post(sendConfigUrl, form);
+        UnityWebRequest www = UnityWebRequest.Post(serverUrl + sendConfigEndpoint, form);
         www.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
         yield return www.SendWebRequest();
@@ -113,34 +126,40 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetObstacleData());
         }
     }
+
     IEnumerator GetCarsData() 
     {
-        UnityWebRequest www = UnityWebRequest.Get(getAgentsUrl);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getAgentsEndpoint);
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
         else 
         {
-            carsData = JsonUtility.FromJson<agentData>(www.downloadHandler.text);
+            carsData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+
+            // Store the old positions for each agent
+            oldPositions = new List<Vector3>(newPositions);
 
             newPositions.Clear();
 
             foreach(Vector3 v in carsData.positions)
                 newPositions.Add(v);
+
+            hold = false;
         }
     }
 
     IEnumerator GetObstacleData() 
     {
-        UnityWebRequest www = UnityWebRequest.Get(getObstaclesUrl);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getObstaclesEndpoint);
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
         else 
         {
-            obstacleData = JsonUtility.FromJson<agentData>(www.downloadHandler.text);
+            obstacleData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
 
             Debug.Log(obstacleData.positions);
 
