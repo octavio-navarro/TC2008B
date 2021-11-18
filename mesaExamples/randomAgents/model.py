@@ -1,6 +1,7 @@
-from mesa import Model
+from mesa import Model, agent
 from mesa.time import RandomActivation
-from mesa.space import Grid
+from mesa.space import MultiGrid
+from mesa.datacollection import DataCollector
 from agent import RandomAgent, ObstacleAgent
 
 class RandomModel(Model):
@@ -12,16 +13,19 @@ class RandomModel(Model):
     """
     def __init__(self, N, width, height):
         self.num_agents = N
-        self.grid = Grid(width,height,torus = False) 
+        self.grid = MultiGrid(width,height,torus = False) 
         self.schedule = RandomActivation(self)
         self.running = True 
+
+        self.datacollector = DataCollector( 
+        agent_reporters={"Steps": lambda a: a.steps_taken if isinstance(a, RandomAgent) else 0})
 
         # Creates the border of the grid
         border = [(x,y) for y in range(height) for x in range(width) if y in [0, height-1] or x in [0, width - 1]]
 
         for pos in border:
             obs = ObstacleAgent(pos, self)
-            self.schedule.add(obs)
+            # self.schedule.add(obs)
             self.grid.place_agent(obs, pos)
 
         # Add the agent to a random empty grid cell
@@ -34,7 +38,10 @@ class RandomModel(Model):
             while (not self.grid.is_cell_empty(pos)):
                 pos = pos_gen(self.grid.width, self.grid.height)
             self.grid.place_agent(a, pos)
+        
+        self.datacollector.collect(self)
 
     def step(self):
         '''Advance the model by one step.'''
         self.schedule.step()
+        self.datacollector.collect(self)
