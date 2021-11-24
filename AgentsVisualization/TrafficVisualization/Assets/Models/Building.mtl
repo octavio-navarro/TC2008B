@@ -1,0 +1,12 @@
+newmtl BuildingMat
+map_Kd TexturesCom_Various_HighRise6_1K_albedo.tif
+map_Pm TexturesCom_Various_HighRise6_1K_metallic.tif
+bump TexturesCom_Various_HighRise6_1K_normal.tif
+map_Ke TexturesCom_Various_HighRise6_1K_emissive.tif
+Kd 1 1 1
+d 1
+
+newmtl RoofMat
+Kd 0.1226415 0.1226415 0.1226415
+d 1
+
