@@ -25,7 +25,12 @@ public class CityMaker : MonoBehaviour
     void MakeTiles(string tiles)
     {
         int x = 0;
-        int y = 0;
+        // Mesa has y 0 at the bottom
+        // To draw from the top, find the rows of the file
+        // and move down
+        // Remove the last enter, and one more to start at 0
+        int y = tiles.Split('\n').Length - 2;
+        Debug.Log(y);
 
         Vector3 position;
         GameObject tile;
@@ -69,7 +74,7 @@ public class CityMaker : MonoBehaviour
                 x += 1;
             } else if (tiles[i] == '\n') {
                 x = 0;
-                y += 1;
+                y -= 1;
             }
         }
 
