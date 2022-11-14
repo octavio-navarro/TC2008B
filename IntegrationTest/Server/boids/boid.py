@@ -1,9 +1,10 @@
-from vector import Vector
+from boids.vector import Vector
 import numpy as np
 
 class Boid():
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, id):
+        self.id = id
         self.position = Vector(x, y)
         vec = (np.random.rand(2) - 0.5)*10
         self.velocity = Vector(*vec)
@@ -17,7 +18,6 @@ class Boid():
         self.width = width
         self.height = height
 
-
     def update(self):
         self.position += self.velocity
         self.velocity += self.acceleration
@@ -26,7 +26,7 @@ class Boid():
             self.velocity = self.velocity / np.linalg.norm(self.velocity) * self.max_speed
 
         self.acceleration = Vector(*np.zeros(2))
-        #print(self.position)  # To show the position at the console
+        # print(self.position)  # To show the position at the console
 
 
     def apply_behaviour(self, boids):
@@ -48,7 +48,6 @@ class Boid():
             self.position.y = 0
         elif self.position.y < 0:
             self.position.y = self.height
-        return self.position
 
     def align(self, boids):
         steering = Vector(*np.zeros(2))

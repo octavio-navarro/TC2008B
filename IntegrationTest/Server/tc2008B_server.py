@@ -7,7 +7,7 @@ import logging
 import json
 
 import numpy as np
-from boid import Boid
+from IntegrationTest.test.boid import Boid
 
 # Size of the board:
 width = 30
