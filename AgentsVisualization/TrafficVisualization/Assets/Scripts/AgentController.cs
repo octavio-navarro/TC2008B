@@ -9,82 +9,95 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class CarData
-{
-    public int uniqueID;
-    public Vector3 position;
-}
-
+[Serializable]
 public class AgentData
 {
-    public List<Vector3> positions;
+    public string id;
+    public float x, y, z;
+
+    public AgentData(string id, float x, float y, float z)
+    {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+}
+
+[Serializable]
+
+public class AgentsData
+{
+    public List<AgentData> positions;
+
+    public AgentsData() => this.positions = new List<AgentData>();
 }
 
 public class AgentController : MonoBehaviour
 {
-    // private string url = "https://boids.us-south.cf.appdomain.cloud/";
+    // private string url = "https://agents.us-south.cf.appdomain.cloud/";
     string serverUrl = "http://localhost:8585";
     string getAgentsEndpoint = "/getAgents";
     string getObstaclesEndpoint = "/getObstacles";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentData carsData, obstacleData;
-    GameObject[] agents;
-    List<Vector3> oldPositions;
-    List<Vector3> newPositions;
-    // Pause the simulation while we get the update from the server
-    bool hold = false;
+    AgentsData agentsData, obstacleData;
+    Dictionary<string, GameObject> agents;
+    Dictionary<string, Vector3> prevPositions, currPositions;
 
-    public GameObject carPrefab, obstaclePrefab, floor;
+    bool updated = false, started = false;
+
+    public GameObject agentPrefab, obstaclePrefab, floor;
     public int NAgents, width, height;
-    public float timeToUpdate = 5.0f, timer, dt;
+    public float timeToUpdate = 5.0f;
+    private float timer, dt;
 
     void Start()
     {
-        carsData = new AgentData();
-        obstacleData = new AgentData();
-        oldPositions = new List<Vector3>();
-        newPositions = new List<Vector3>();
+        agentsData = new AgentsData();
+        obstacleData = new AgentsData();
 
-        agents = new GameObject[NAgents];
+        prevPositions = new Dictionary<string, Vector3>();
+        currPositions = new Dictionary<string, Vector3>();
+
+        agents = new Dictionary<string, GameObject>();
 
         floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
         floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
         
         timer = timeToUpdate;
 
-        for(int i = 0; i < NAgents; i++)
-            agents[i] = Instantiate(carPrefab, Vector3.zero, Quaternion.identity);
-            
         StartCoroutine(SendConfiguration());
     }
 
     private void Update() 
     {
-        float t = timer/timeToUpdate;
-        // Smooth out the transition at start and end
-        dt = t * t * ( 3f - 2f*t);
-
-        if(timer >= timeToUpdate)
+        if(timer < 0)
         {
-            timer = 0;
-            hold = true;
+            timer = timeToUpdate;
+            updated = false;
             StartCoroutine(UpdateSimulation());
         }
 
-        if (!hold)
+        if (updated)
         {
-            for (int s = 0; s < agents.Length; s++)
+            timer -= Time.deltaTime;
+            dt = 1.0f - (timer / timeToUpdate);
+
+            foreach(var agent in currPositions)
             {
-                Vector3 interpolated = Vector3.Lerp(oldPositions[s], newPositions[s], dt);
-                agents[s].transform.localPosition = interpolated;
-                
-                Vector3 dir = oldPositions[s] - newPositions[s];
-                agents[s].transform.rotation = Quaternion.LookRotation(dir);
-                
+                Vector3 currentPosition = agent.Value;
+                Vector3 previousPosition = prevPositions[agent.Key];
+
+                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
+                Vector3 direction = currentPosition - interpolated;
+
+                agents[agent.Key].transform.localPosition = interpolated;
+                if(direction != Vector3.zero) agents[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
             }
-            // Move time from the last frame
-            timer += Time.deltaTime;
+
+            // float t = (timer / timeToUpdate);
+            // dt = t * t * ( 3f - 2f*t);
         }
     }
  
@@ -97,7 +110,7 @@ public class AgentController : MonoBehaviour
             Debug.Log(www.error);
         else 
         {
-            StartCoroutine(GetCarsData());
+            StartCoroutine(GetAgentsData());
         }
     }
 
@@ -122,12 +135,12 @@ public class AgentController : MonoBehaviour
         {
             Debug.Log("Configuration upload complete!");
             Debug.Log("Getting Agents positions");
-            StartCoroutine(GetCarsData());
+            StartCoroutine(GetAgentsData());
             StartCoroutine(GetObstacleData());
         }
     }
 
-    IEnumerator GetCarsData() 
+    IEnumerator GetAgentsData() 
     {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getAgentsEndpoint);
         yield return www.SendWebRequest();
@@ -136,17 +149,28 @@ public class AgentController : MonoBehaviour
             Debug.Log(www.error);
         else 
         {
-            carsData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+            agentsData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
 
-            // Store the old positions for each agent
-            oldPositions = new List<Vector3>(newPositions);
+            foreach(AgentData agent in agentsData.positions)
+            {
+                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
 
-            newPositions.Clear();
+                    if(!started)
+                    {
+                        prevPositions[agent.id] = newAgentPosition;
+                        agents[agent.id] = Instantiate(agentPrefab, newAgentPosition, Quaternion.identity);
+                    }
+                    else
+                    {
+                        Vector3 currentPosition = new Vector3();
+                        if(currPositions.TryGetValue(agent.id, out currentPosition))
+                            prevPositions[agent.id] = currentPosition;
+                        currPositions[agent.id] = newAgentPosition;
+                    }
+            }
 
-            foreach(Vector3 v in carsData.positions)
-                newPositions.Add(v);
-
-            hold = false;
+            updated = true;
+            if(!started) started = true;
         }
     }
 
@@ -159,13 +183,13 @@ public class AgentController : MonoBehaviour
             Debug.Log(www.error);
         else 
         {
-            obstacleData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+            obstacleData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
 
             Debug.Log(obstacleData.positions);
 
-            foreach(Vector3 position in obstacleData.positions)
+            foreach(AgentData obstacle in obstacleData.positions)
             {
-                Instantiate(obstaclePrefab, position, Quaternion.identity);
+                Instantiate(obstaclePrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
             }
         }
     }

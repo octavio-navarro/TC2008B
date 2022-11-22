@@ -9,7 +9,7 @@ from RandomAgents import *
 number_agents = 10
 width = 28
 height = 28
-trafficModel = None
+randomModel = None
 currentStep = 0
 
 app = Flask("Traffic example")
@@ -18,7 +18,7 @@ app = Flask("Traffic example")
 
 @app.route('/init', methods=['POST', 'GET'])
 def initModel():
-    global currentStep, trafficModel, number_agents, width, height
+    global currentStep, randomModel, number_agents, width, height
 
     if request.method == 'POST':
         number_agents = int(request.form.get('NAgents'))
@@ -28,33 +28,33 @@ def initModel():
 
         print(request.form)
         print(number_agents, width, height)
-        trafficModel = RandomModel(number_agents, width, height)
+        randomModel = RandomModel(number_agents, width, height)
 
         return jsonify({"message":"Parameters recieved, model initiated."})
 
 @app.route('/getAgents', methods=['GET'])
 def getAgents():
-    global trafficModel
+    global randomModel
 
     if request.method == 'GET':
-        carPositions = [{"x": x, "y":1, "z":z} for (a, x, z) in trafficModel.grid.coord_iter() if isinstance(a, RandomAgent)]
+        agentPositions = [{"id": str(a.unique_id), "x": x, "y":1, "z":z} for (a, x, z) in randomModel.grid.coord_iter() if isinstance(a, RandomAgent)]
 
-        return jsonify({'positions':carPositions})
+        return jsonify({'positions':agentPositions})
 
 @app.route('/getObstacles', methods=['GET'])
 def getObstacles():
-    global trafficModel
+    global randomModel
 
     if request.method == 'GET':
-        carPositions = [{"x": x, "y":1, "z":z} for (a, x, z) in trafficModel.grid.coord_iter() if isinstance(a, ObstacleAgent)]
+        carPositions = [{"id": str(a.unique_id), "x": x, "y":1, "z":z} for (a, x, z) in randomModel.grid.coord_iter() if isinstance(a, ObstacleAgent)]
 
         return jsonify({'positions':carPositions})
 
 @app.route('/update', methods=['GET'])
 def updateModel():
-    global currentStep, trafficModel
+    global currentStep, randomModel
     if request.method == 'GET':
-        trafficModel.step()
+        randomModel.step()
         currentStep += 1
         return jsonify({'message':f'Model updated to step {currentStep}.', 'currentStep':currentStep})
 
