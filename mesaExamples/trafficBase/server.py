@@ -38,13 +38,14 @@ def agent_portrayal(agent):
 width = 0
 height = 0
 
-with open('base.txt') as baseFile:
+with open('2022_base.txt') as baseFile:
     lines = baseFile.readlines()
     width = len(lines[0])-1
     height = len(lines)
 
 model_params = {"N":5}
 
+print(width, height)
 grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
 
 server = ModularServer(RandomModel, [grid], "Traffic Base", model_params)
