@@ -49,7 +49,4 @@ class RandomModel(Model):
 
     def step(self):
         '''Advance the model by one step.'''
-        if self.schedule.steps % 10 == 0:
-            for agent in self.traffic_lights:
-                agent.state = not agent.state
         self.schedule.step()

@@ -49,9 +49,8 @@ class Traffic_Light(Agent):
         """ 
         To change the state (green or red) of the traffic light in case you consider the time to change of each traffic light.
         """
-        # if self.model.schedule.steps % self.timeToChange == 0:
-        #     self.state = not self.state
-        pass
+        if self.model.schedule.steps % self.timeToChange == 0:
+            self.state = not self.state
 
 class Destination(Agent):
     """
