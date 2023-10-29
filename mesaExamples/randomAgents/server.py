@@ -1,6 +1,6 @@
 from model import RandomModel, ObstacleAgent
-from mesa.visualization.modules import CanvasGrid, BarChartModule
-from mesa.visualization.ModularVisualization import ModularServer
+from mesa.visualization import CanvasGrid, BarChartModule
+from mesa.visualization import ModularServer
 
 def agent_portrayal(agent):
     if agent is None: return
@@ -21,6 +21,7 @@ def agent_portrayal(agent):
 model_params = {"N":5, "width":10, "height":10}
 
 grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
+
 bar_chart = BarChartModule(
     [{"Label":"Steps", "Color":"#AA0000"}], 
     scope="agent", sorting="ascending", sort_by="Steps")

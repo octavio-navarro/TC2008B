@@ -1,26 +1,34 @@
-from mesa import Model
-from mesa.datacollection import DataCollector
-from mesa.space import Grid
+import mesa
+from mesa import Model, DataCollector
+from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 
 from agent import TreeCell
 
 class ForestFire(Model):
     """
-    Simple Forest Fire model.
+        Simple Forest Fire model.
+
+        Attributes:
+            height, width: Grid size.
+            density: What fraction of grid cells have a tree in them.
     """
 
     def __init__(self, height=100, width=100, density=0.65):
         """
         Create a new forest fire model.
+        
         Args:
             height, width: The size of the grid to model
             density: What fraction of grid cells have a tree in them.
         """
+
         # Set up model objects
         self.schedule = RandomActivation(self)
-        self.grid = Grid(height, width, torus=False)
+        self.grid = SingleGrid(height, width, torus=False)
 
+        # A datacollector is a Mesa object for collecting data about the model.
+        # We'll use it to count the number of trees in each condition each step.
         self.datacollector = DataCollector(
             {
                 "Fine": lambda m: self.count_type(m, "Fine"),
@@ -30,13 +38,16 @@ class ForestFire(Model):
         )
 
         # Place a tree in each cell with Prob = density
-        for (contents, x, y) in self.grid.coord_iter():
+        # coord_iter is an iterator that returns positions as well as cell contents.
+        for contents, (x, y) in self.grid.coord_iter():
             if self.random.random() < density:
                 # Create a tree
                 new_tree = TreeCell((x, y), self)
+                
                 # Set all trees in the first column on fire.
                 if x == 0:
                     new_tree.condition = "On Fire"
+                
                 self.grid.place_agent(new_tree, (x, y))
                 self.schedule.add(new_tree)
 
@@ -55,6 +66,7 @@ class ForestFire(Model):
         if self.count_type(self, "On Fire") == 0:
             self.running = False
 
+    # staticmethod is a Python decorator that makes a method callable without an instance.
     @staticmethod
     def count_type(model, tree_condition):
         """
