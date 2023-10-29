@@ -1,9 +1,10 @@
 # TC2008B. Sistemas Multiagentes y Gráficas Computacionales
 # Python flask server to interact with Unity. Based on the code provided by Sergio Ruiz.
-# Octavio Navarro. October 2021
+# Octavio Navarro. October 2023git 
 
 from flask import Flask, request, jsonify
-from RandomAgents import *
+from randomAgents.model import RandomModel
+from randomAgents.agent import RandomAgent, ObstacleAgent
 
 # Size of the board:
 number_agents = 10
@@ -14,9 +15,7 @@ currentStep = 0
 
 app = Flask("Traffic example")
 
-# @app.route('/', methods=['POST', 'GET'])
-
-@app.route('/init', methods=['POST', 'GET'])
+@app.route('/init', methods=['POST'])
 def initModel():
     global currentStep, randomModel, number_agents, width, height
 
@@ -37,7 +36,7 @@ def getAgents():
     global randomModel
 
     if request.method == 'GET':
-        agentPositions = [{"id": str(a.unique_id), "x": x, "y":1, "z":z} for (a, x, z) in randomModel.grid.coord_iter() if isinstance(a, RandomAgent)]
+        agentPositions = [{"id": str(a.unique_id), "x": x, "y":1, "z":z} for a, (x, z) in randomModel.grid.coord_iter() if isinstance(a, RandomAgent)]
 
         return jsonify({'positions':agentPositions})
 
@@ -46,7 +45,7 @@ def getObstacles():
     global randomModel
 
     if request.method == 'GET':
-        carPositions = [{"id": str(a.unique_id), "x": x, "y":1, "z":z} for (a, x, z) in randomModel.grid.coord_iter() if isinstance(a, ObstacleAgent)]
+        carPositions = [{"id": str(a.unique_id), "x": x, "y":1, "z":z} for a, (x, z) in randomModel.grid.coord_iter() if isinstance(a, ObstacleAgent)]
 
         return jsonify({'positions':carPositions})
 

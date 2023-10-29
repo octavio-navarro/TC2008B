@@ -4,19 +4,22 @@ from mesa.space import MultiGrid
 from agent import *
 import json
 
-class RandomModel(Model):
+class CityModel(Model):
     """ 
-    Creates a new model with random agents.
-    Args:
-        N: Number of agents in the simulation
+        Creates a model based on a city map.
+
+        Args:
+            N: Number of agents in the simulation
     """
     def __init__(self, N):
 
-        dataDictionary = json.load(open("mapDictionary.json"))
+        # Load the map dictionary. The dictionary maps the characters in the map file to the corresponding agent.
+        dataDictionary = json.load(open("city_files/mapDictionary.json"))
 
         self.traffic_lights = []
 
-        with open('2022_base.txt') as baseFile:
+        # Load the map file. The map file is a text file where each character represents an agent.
+        with open('city_files/2022_base.txt') as baseFile:
             lines = baseFile.readlines()
             self.width = len(lines[0])-1
             self.height = len(lines)
@@ -24,6 +27,7 @@ class RandomModel(Model):
             self.grid = MultiGrid(self.width, self.height, torus = False) 
             self.schedule = RandomActivation(self)
 
+            # Goes through each character in the map file and creates the corresponding agent.
             for r, row in enumerate(lines):
                 for c, col in enumerate(row):
                     if col in ["v", "^", ">", "<"]:
