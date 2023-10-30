@@ -2,27 +2,33 @@ name: agents
 channels:
   - defaults
 dependencies:
-  - bzip2=1.0.8=he774522_0
-  - ca-certificates=2023.08.22=haa95532_0
-  - expat=2.5.0=hd77b12b_0
-  - libffi=3.4.4=hd77b12b_0
-  - openssl=3.0.11=h2bbff1b_2
-  - pip=23.3=py312haa95532_0
-  - python=3.12.0=h1d929f7_0
-  - setuptools=68.0.0=py312haa95532_0
-  - sqlite=3.41.2=h2bbff1b_0
-  - tk=8.6.12=h2bbff1b_0
-  - vc=14.2=h21ff451_1
-  - vs2015_runtime=14.27.29016=h5e58377_2
-  - wheel=0.37.1=pyhd3eb1b0_0
-  - xz=5.4.2=h8cc25b3_0
-  - zlib=1.2.13=h8cc25b3_0
+  - _libgcc_mutex=0.1
+  - _openmp_mutex=5.1
+  - bzip2=1.0.8
+  - ca-certificates=2023.08.22
+  - expat=2.5.0
+  - ld_impl_linux-64=2.38
+  - libffi=3.4.4
+  - libgcc-ng=11.2.0
+  - libgomp=11.2.0
+  - libstdcxx-ng=11.2.0
+  - libuuid=1.41.5
+  - ncurses=6.4
+  - openssl=3.0.11
+  - pip=23.3
+  - python=3.12.0
+  - readline=8.2
+  - setuptools=68.0.0
+  - sqlite=3.41.2
+  - tk=8.6.12
+  - wheel=0.37.1
+  - xz=5.4.2
+  - zlib=1.2.13
   - pip:
       - anyio==4.0.0
       - arrow==1.3.0
       - asttokens==2.4.1
       - attrs==23.1.0
-      - backcall==0.2.0
       - binaryornot==0.4.4
       - blinker==1.6.3
       - cachetools==5.3.2
@@ -30,7 +36,6 @@ dependencies:
       - chardet==5.2.0
       - charset-normalizer==3.3.1
       - click==8.1.7
-      - colorama==0.4.6
       - comm==0.1.4
       - contourpy==1.1.1
       - cookiecutter==2.4.0
@@ -46,17 +51,17 @@ dependencies:
       - humanize==4.8.0
       - idna==3.4
       - ipykernel==6.26.0
-      - ipython==8.16.1
+      - ipython==8.17.1
       - ipyvue==1.10.1
       - ipyvuetify==1.8.10
       - ipywidgets==8.1.1
       - itsdangerous==2.1.2
       - jedi==0.19.1
       - jinja2==3.1.2
-      - jsonschema==4.19.1
+      - jsonschema==4.19.2
       - jsonschema-specifications==2023.7.1
       - jupyter-client==8.5.0
-      - jupyter-core==5.4.0
+      - jupyter-core==5.5.0
       - jupyterlab-widgets==3.0.9
       - kiwisolver==1.4.5
       - markdown==3.5
@@ -74,11 +79,12 @@ dependencies:
       - packaging==23.2
       - pandas==2.1.2
       - parso==0.8.3
-      - pickleshare==0.7.5
+      - pexpect==4.8.0
       - pillow==10.1.0
       - platformdirs==3.11.0
       - prompt-toolkit==3.0.39
       - psutil==5.9.6
+      - ptyprocess==0.7.0
       - pure-eval==0.2.2
       - pygments==2.16.1
       - pymdown-extensions==10.3.1
@@ -86,7 +92,6 @@ dependencies:
       - python-dateutil==2.8.2
       - python-slugify==8.0.1
       - pytz==2023.3.post1
-      - pywin32==306
       - pyyaml==6.0.1
       - pyzmq==25.1.1
       - reacton==1.7.2
@@ -103,7 +108,7 @@ dependencies:
       - text-unidecode==1.3
       - tornado==6.3.3
       - tqdm==4.66.1
-      - traitlets==5.12.0
+      - traitlets==5.13.0
       - types-python-dateutil==2.8.19.14
       - typing-extensions==4.8.0
       - tzdata==2023.3
