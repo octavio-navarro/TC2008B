@@ -1,7 +1,7 @@
 import mesa
 from mesa import Model, DataCollector
 from mesa.space import SingleGrid
-from mesa.time import RandomActivation
+from mesa.time import SimultaneousActivation 
 
 from agent import TreeCell
 
@@ -24,7 +24,11 @@ class ForestFire(Model):
         """
 
         # Set up model objects
-        self.schedule = RandomActivation(self)
+        # SimultaneousActivation is a Mesa object that runs all the agents at the same time. 
+        # This is necessary in this model because the next state of each cell depends on the current state of all its neighbors -- before they've changed.
+        # This activation method requires that all the agents have a step() and an advance() method. 
+        # The step() method computes the next state of the agent, and the advance() method sets the state to the new computed state.
+        self.schedule = SimultaneousActivation(self)
         self.grid = SingleGrid(height, width, torus=False)
 
         # A datacollector is a Mesa object for collecting data about the model.
@@ -56,7 +60,7 @@ class ForestFire(Model):
 
     def step(self):
         """
-        Advance the model by one step.
+        Have the scheduler advance each cell by one step
         """
         self.schedule.step()
         # collect data
@@ -65,6 +69,7 @@ class ForestFire(Model):
         # Halt if no more fire
         if self.count_type(self, "On Fire") == 0:
             self.running = False
+
 
     # staticmethod is a Python decorator that makes a method callable without an instance.
     @staticmethod

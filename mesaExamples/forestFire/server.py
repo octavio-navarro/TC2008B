@@ -27,12 +27,12 @@ canvas_element = CanvasGrid(forest_fire_portrayal, 100, 100, 500, 500)
 
 # The chart will plot the number of each type of tree over time.
 tree_chart = ChartModule(
-    [{"Label": label, "Color": color} for (label, color) in COLORS.items()]
+    [{"Label": label, "Color": color} for label, color in COLORS.items()]
 )
 
 # The pie chart will plot the number of each type of tree at the current step.
 pie_chart = PieChartModule(
-    [{"Label": label, "Color": color} for (label, color) in COLORS.items()]
+    [{"Label": label, "Color": color} for label, color in COLORS.items()]
 )
 
 # The model parameters will be set by sliders controlling the initial density

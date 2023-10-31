@@ -23,6 +23,7 @@ class TreeCell(Agent):
         super().__init__(pos, model)
         self.pos = pos
         self.condition = "Fine"
+        self._next_condition = None
 
     def step(self):
         """
@@ -31,5 +32,13 @@ class TreeCell(Agent):
         if self.condition == "On Fire":
             for neighbor in self.model.grid.iter_neighbors(self.pos, True):
                 if neighbor.condition == "Fine":
-                    neighbor.condition = "On Fire"
-            self.condition = "Burned Out"
+                    neighbor._next_condition = "On Fire"
+            self._next_condition = "Burned Out"
+
+    
+    def advance(self):
+        """
+        Advance the model by one step.
+        """
+        if self._next_condition is not None:
+            self.condition = self._next_condition
