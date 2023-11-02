@@ -10,18 +10,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Enumeration to define the axis
+public enum AXIS {X, Y, Z};
+// Values:        0  1  2
+
 public class HW_Transforms : MonoBehaviour
 {
-    // Enumeration to define the axis
-    public enum AXIS {X, Y, Z};
-    // Values:        0  1  2
-
-    [SerializeField] Vector4 point;
-    [SerializeField] Vector3 pivot;
-    [SerializeField] float angle;
-
-    [SerializeField] Transform obj;
-
     public static Matrix4x4 TranslationMat(float tx, float ty, float tz)
     {
         Matrix4x4 matrix = Matrix4x4.identity;
@@ -54,23 +48,5 @@ public class HW_Transforms : MonoBehaviour
 
         }
         return matrix;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        Matrix4x4 translation = TranslationMat(pivot.x, pivot.y, pivot.z);
-
-        Vector4 newPoint = translation * point;
-        Debug.Log("Matrix: " + translation);
-        Debug.Log("Result: " + newPoint);
-
-        obj.position = newPoint;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

@@ -361,6 +361,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: cube_quads
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a57b6351bd30b8667a34ccf9c54b267e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
