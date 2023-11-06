@@ -42,36 +42,42 @@ public class ApplyTransforms : MonoBehaviour
     void DoTransform()
     {
         // A matrix to move the object
-        Matrix4x4 move = HW_Transforms.TranslationMat(displacement.x * Time.deltaTime,
-                                                      displacement.y * Time.deltaTime,
-                                                      displacement.z * Time.deltaTime);
+        Matrix4x4 move = HW_Transforms.TranslationMat(displacement.x * Time.time,
+                                                      displacement.y * Time.time,
+                                                      displacement.z * Time.time);
 
-        // A matrix to rotate the object round a specified axis
-        Matrix4x4 rotate = HW_Transforms.RotateMat(angle * Time.deltaTime,
+        // Matrices to apply a rotation around an arbitrary point
+        // Using 'displacement' as the point of rotation
+        Matrix4x4 moveOrigin = HW_Transforms.TranslationMat(-displacement.x,
+                                                            -displacement.y,
+                                                            -displacement.z);
+
+        Matrix4x4 moveObject = HW_Transforms.TranslationMat(displacement.x,
+                                                            displacement.y,
+                                                            displacement.z);
+
+        // Matrix to generate a rotataion
+        Matrix4x4 rotate = HW_Transforms.RotateMat(angle * Time.time,
                                                    rotationAxis);
 
-        // Matrices to set the pivot around which to rotate the object
-        Matrix4x4 posOrigin = HW_Transforms.TranslationMat(-displacement.x,
-                                                           -displacement.y,
-                                                           -displacement.z);
-
-        Matrix4x4 posObject = HW_Transforms.TranslationMat(displacement.x,
-                                                           displacement.y,
-                                                           displacement.z);
-
         // Combine all the matrices into a single one
-        Matrix4x4 composite = posObject * rotate * posOrigin;
+        // Rotate around a pivot point
+        Matrix4x4 composite = moveObject * rotate * moveOrigin;
+        // Roll and move as a wheel
+        Matrix4x4 composite = move * rotate;
 
         // Multiply each vertex in the mesh by the composite matrix
         for (int i=0; i<newVertices.Length; i++) {
-            Vector4 temp = new Vector4(newVertices[i].x,
-                                       newVertices[i].y,
-                                       newVertices[i].z,
+            Vector4 temp = new Vector4(baseVertices[i].x,
+                                       baseVertices[i].y,
+                                       baseVertices[i].z,
                                        1);
             newVertices[i] = composite * temp;
         }
 
         // Replace the vertices in the mesh
         mesh.vertices = newVertices;
+        // Make sure the normals are adapted to the new vertex positions
+        mesh.RecalculateNormals();
     }
 }
