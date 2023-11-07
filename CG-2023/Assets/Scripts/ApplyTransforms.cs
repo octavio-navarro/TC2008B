@@ -62,7 +62,7 @@ public class ApplyTransforms : MonoBehaviour
 
         // Combine all the matrices into a single one
         // Rotate around a pivot point
-        Matrix4x4 composite = moveObject * rotate * moveOrigin;
+        //Matrix4x4 composite = moveObject * rotate * moveOrigin;
         // Roll and move as a wheel
         Matrix4x4 composite = move * rotate;
 
