@@ -9,7 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicLerp : MonoBehaviour
+public class Lerp302 : MonoBehaviour
 {
     [SerializeField] Vector3 startPos;
     [SerializeField] Vector3 finalPos;
@@ -40,7 +40,7 @@ public class BasicLerp : MonoBehaviour
 
         // To move using matrix tansformations, put the vector 3 into a 
         //  translation matrix, and apply to the vertices
-        Matrix4x4 move = HW_Transforms.TranslateMat(position.x, position.y, position.z);
+        Matrix4x4 move = HW_Transforms.TranslationMat(position.x, position.y, position.z);
 
         // Update time
         elapsedTime += Time.deltaTime;
