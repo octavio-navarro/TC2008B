@@ -24,13 +24,10 @@ public class ApplyTransforms : MonoBehaviour
     {
         // Get the mesh from the child object
         mesh = GetComponentInChildren<MeshFilter>().mesh;
+        // Get the vertices
         baseVertices = mesh.vertices;
-
         // Create a copy of the original vertices
         newVertices = new Vector3[baseVertices.Length];
-        for (int i = 0; i < baseVertices.Length; i++) {
-            newVertices[i] = baseVertices[i];
-        }
     }
 
     // Update is called once per frame
@@ -79,5 +76,7 @@ public class ApplyTransforms : MonoBehaviour
         mesh.vertices = newVertices;
         // Make sure the normals are adapted to the new vertex positions
         mesh.RecalculateNormals();
+        // Let the renderer know the vertex positions changed
+        mesh.RecalculateBounds();
     }
 }
