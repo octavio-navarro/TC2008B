@@ -35,7 +35,7 @@ class RandomAgent(Agent):
         next_move = self.random.choice(next_moves)
 
         # Now move:
-        if self.random.random() < 0.1:
+        if self.random.random() < 0.5:
             self.model.grid.move_agent(self, next_move)
             self.steps_taken+=1
 

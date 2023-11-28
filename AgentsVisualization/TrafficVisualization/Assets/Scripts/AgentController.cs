@@ -97,11 +97,14 @@ public class AgentController : MonoBehaviour
         agentsData = new AgentsData();
         obstacleData = new AgentsData();
 
+        // Initializes the dictionaries to store the agents positions.
+        // prevPositions stores the previous positions of the agents, while currPositions stores the current positions.
         prevPositions = new Dictionary<string, Vector3>();
         currPositions = new Dictionary<string, Vector3>();
 
         agents = new Dictionary<string, GameObject>();
 
+        // Sets the floor scale and position.
         floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
         floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
         
