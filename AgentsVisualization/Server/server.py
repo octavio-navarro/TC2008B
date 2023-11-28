@@ -72,6 +72,7 @@ def updateModel():
         currentStep += 1
         return jsonify({'message':f'Model updated to step {currentStep}.', 'currentStep':currentStep})
 
+
 if __name__=='__main__':
     # Run the flask server in port 8585
     app.run(host="localhost", port=8585, debug=True)
