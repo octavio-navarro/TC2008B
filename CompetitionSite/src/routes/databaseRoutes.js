@@ -10,7 +10,8 @@ dbRouter.get('/attempts', databaseController.getAllAttempts);
 
 dbRouter.get('/attempts/:year/:classroom', databaseController.getAllAttempts);
 
-dbRouter.post('/attempts', databaseController.uploadAttempt);
+dbRouter.post('/validate_attempt', databaseController.validateAttempt);
 
+dbRouter.post('/attempts', databaseController.uploadAttempt);
 
 export {dbRouter};

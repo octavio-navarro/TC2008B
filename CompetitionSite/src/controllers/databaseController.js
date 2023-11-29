@@ -36,6 +36,33 @@ class DatabaseController {
   }
 }
 
+function validateAttempt(req, res){
+ 
+  try{
+    const attempt = req.body;
+
+    let status = 200;
+    let message = "Attempt is valid";
+  
+    if(attempt.year === undefined || attempt.classroom === undefined || attempt.name === undefined || attempt.num_cars === undefined){
+      status = 400;
+      message = "Missing parameters";
+    }
+
+    if(typeof attempt.year !== 'number' || typeof attempt.classroom !== 'number' || typeof attempt.name !== 'string' || typeof attempt.num_cars !== 'number'){
+      status = 400;
+      message = "Invalid parameters";
+    }
+
+    res.status(status).json({message: message});
+
+  }
+  catch(error){
+    console.error('Error validating attempt:', error);
+    res.status(500).json({message: "Error validating attempt"});
+  }
+}
+
 async function getAllAttempts(req, res){
   
     let databaseController = null;
@@ -125,4 +152,4 @@ async function uploadAttempt(req, res){
   }
 }
 
-export {DatabaseController, uploadAttempt, getAllAttempts}
+export {DatabaseController, uploadAttempt, getAllAttempts, validateAttempt}
