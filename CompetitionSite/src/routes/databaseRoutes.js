@@ -1,21 +1,16 @@
 import express from 'express';
-import databaseController from '../controllers/databaseController.js';
+import * as databaseController from '../controllers/databaseController.js';
 
 const dbRouter = express.Router();
 
-// Route to get all records from the database
-dbRouter.get('/records', databaseController.getAllRecords);
-
-// Route to get a specific record by ID
-dbRouter.get('/records/:id', databaseController.getRecordById);
-
 // Route to create a new record
-dbRouter.post('/records', databaseController.createRecord);
 
-// Route to update an existing record
-dbRouter.put('/records/:id', databaseController.updateRecord);
+// Route to get all records, with optional query parameters
+dbRouter.get('/attempts', databaseController.getAllAttempts);
 
-// Route to delete a record
-dbRouter.delete('/records/:id', databaseController.deleteRecord);
+dbRouter.get('/attempts/:year/:classroom', databaseController.getAllAttempts);
 
-export default dbRouter;
+dbRouter.post('/attempts', databaseController.uploadAttempt);
+
+
+export {dbRouter};
