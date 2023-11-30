@@ -100,6 +100,44 @@ async function getAllAttempts(req, res){
   
 }
 
+async function getAverageAttempts(req, res){
+    
+    let databaseController = null;
+  
+    try{
+      databaseController = new DatabaseController();
+  
+      await databaseController.connect();
+  
+      const query = `SELECT * FROM avg_attempts` + (req.params.year !== undefined ? ` WHERE year = ?` : '') + (req.params.classroom !== undefined ? ` AND classroom = ?` : '');
+  
+      const params = [];
+  
+      if(req.params.year !== undefined){
+        params.push(req.params.year);
+      }
+  
+      if(req.params.classroom !== undefined){
+        params.push(req.params.classroom);
+      }
+  
+      const [results, fields] = await databaseController.connection.execute(query, params);
+  
+      res.status(200).json(results);
+    }
+    catch(error){
+      console.error('Error getting all attempts:', error);
+      res.status(500).json({message: "Error getting all attempts"});
+    }
+    finally{
+      if(databaseController !== null){
+        databaseController.disconnect();
+      }
+    }
+  
+  
+}
+
 async function uploadAttempt(req, res){
 
   let databaseController = null;
@@ -152,4 +190,4 @@ async function uploadAttempt(req, res){
   }
 }
 
-export {DatabaseController, uploadAttempt, getAllAttempts, validateAttempt}
+export {DatabaseController, uploadAttempt, getAllAttempts, validateAttempt, getAverageAttempts}

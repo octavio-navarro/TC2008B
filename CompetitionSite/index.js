@@ -6,7 +6,8 @@ import dotenv from "dotenv/config";
 import ratelimit from "express-rate-limit";
 import fs from "fs";
 
-import {dbRouter} from "./src/routes/databaseRoutes.js"; 
+import {dbRouter} from "./src/routes/databaseRoutes.js";
+import {pageRouter} from "./src/routes/pageRoutes.js"; 
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.use("/api", dbRouter);
+app.use("/", pageRouter);
 
 // Start the server
 app.listen(port, () => {

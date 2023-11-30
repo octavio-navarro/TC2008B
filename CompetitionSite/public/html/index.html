@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="../js/load_charts.js"></script>
+    
+    <title>Contest site</title>
+</head>
+<body>
+    <header>
+        <h1>Contest site</h1>
+    </header>
+    <div>
+        <input id="yearID" type="number" min="2021" max="2030" value="2023">
+        <input id="classRoomID" type="number" min="100" max="500" value="301">
+        <input id="loadButton" type="button" value="Load charts"> 
+        <input id="clearButton" type="button" value="Clear charts">
+    </div>
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
+</body>
+</html>
