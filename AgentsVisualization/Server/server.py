@@ -1,6 +1,6 @@
 # TC2008B. Sistemas Multiagentes y Gráficas Computacionales
 # Python flask server to interact with Unity. Based on the code provided by Sergio Ruiz.
-# Octavio Navarro. October 2023 
+# Octavio Navarro. October 2023
 
 from flask import Flask, request, jsonify
 from randomAgents.model import RandomModel
@@ -46,7 +46,9 @@ def getAgents():
         # Get the positions of the agents and return them to Unity in JSON format.
         # Note that the positions are sent as a list of dictionaries, where each dictionary has the id and position of an agent.
         # The y coordinate is set to 1, since the agents are in a 3D world. The z coordinate corresponds to the row (y coordinate) of the grid in mesa.
-        agentPositions = [{"id": str(a.unique_id), "x": x, "y":1, "z":z} for a, (x, z) in randomModel.grid.coord_iter() if isinstance(a, RandomAgent)]
+        agentPositions = [{"id": str(a.unique_id), "x": x, "y":1, "z":z}
+                          for a, (x, z) in randomModel.grid.coord_iter()
+                          if isinstance(a, RandomAgent)]
 
         return jsonify({'positions':agentPositions})
 
