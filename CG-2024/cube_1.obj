@@ -1,0 +1,23 @@
+# Define the coordinates of the vertices
+v -1 -1  1
+v  1 -1  1
+v  1  1  1
+v -1  1  1
+v -1 -1 -1
+v  1 -1 -1
+v  1  1 -1
+v -1  1 -1
+
+# Define which vertices form each face
+f 1 3 4
+f 1 2 3
+f 2 6 7
+f 7 3 2
+f 4 3 7
+f 7 8 4
+f 1 4 5
+f 4 8 5
+f 1 5 6
+f 1 6 2
+f 6 8 7
+f 6 5 8
