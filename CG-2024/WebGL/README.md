@@ -27,7 +27,8 @@ This will open the index with all the examples.
 - https://www.tutorialspoint.com/webgl/index.htm
 
 Reference card for WebGL:
-- https://www.khronos.org/files/webgl/webgl-reference-card-1_0.pdf
+- https://www.khronos.org/files/webgl20-reference-guide.pdf
+
 Full GLSL reference:
 - https://www.khronos.org/files/opengles_shading_language.pdf
 
