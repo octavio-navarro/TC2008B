@@ -11,6 +11,8 @@ class RandomModel(Model):
         height, width: The size of the grid to model
     """
     def __init__(self, N, width, height):
+
+        super().__init__(seed=42)
         self.num_agents = N
         # Multigrid is a special type of grid where each cell can contain multiple agents.
         self.grid = SingleGrid(width, height, torus = False) 
@@ -25,7 +27,7 @@ class RandomModel(Model):
 
         # Add obstacles to the grid
         for pos in border:
-            obs = ObstacleAgent(pos, self)
+            obs = ObstacleAgent(self)
             self.grid.place_agent(obs, pos)
 
         # Function to generate random positions
@@ -34,7 +36,7 @@ class RandomModel(Model):
         # Add the agent to a random empty grid cell
         for i in range(self.num_agents):
 
-            a = RandomAgent(i+1000, self) 
+            a = RandomAgent(self) 
             self.schedule.add(a)
 
             pos = pos_gen(self.grid.width, self.grid.height)
