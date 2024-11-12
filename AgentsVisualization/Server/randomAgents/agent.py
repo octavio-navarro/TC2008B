@@ -7,14 +7,14 @@ class RandomAgent(Agent):
         unique_id: Agent's ID 
         direction: Randomly chosen direction chosen from one of eight directions
     """
-    def __init__(self, model):
+    def __init__(self, unique_id, model):
         """
         Creates a new random agent.
         Args:
             unique_id: The agent's ID
             model: Model reference for the agent
         """
-        super().__init__(model)
+        super().__init__(unique_id, model)
         self.steps_taken = 0
 
     def move(self):
@@ -48,8 +48,8 @@ class ObstacleAgent(Agent):
     """
     Obstacle agent. Just to add obstacles to the grid.
     """
-    def __init__(self, model):
-        super().__init__(model)
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
 
     def step(self):
         pass  

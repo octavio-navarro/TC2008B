@@ -26,8 +26,8 @@ class RandomModel(Model):
         border = [(x,y) for y in range(height) for x in range(width) if y in [0, height-1] or x in [0, width - 1]]
 
         # Add obstacles to the grid
-        for pos in border:
-            obs = ObstacleAgent(self)
+        for i, pos in enumerate(border):
+            obs = ObstacleAgent(f"o-{i+1000}",self)
             self.grid.place_agent(obs, pos)
 
         # Function to generate random positions
@@ -36,7 +36,7 @@ class RandomModel(Model):
         # Add the agent to a random empty grid cell
         for i in range(self.num_agents):
 
-            a = RandomAgent(self) 
+            a = RandomAgent(f"a-{i+1000}", self) 
             self.schedule.add(a)
 
             pos = pos_gen(self.grid.width, self.grid.height)

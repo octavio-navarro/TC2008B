@@ -32,63 +32,57 @@ void main() {
 }
 `;
 
-// Variables used for the object, and coltrolled from the UI
-const object = {
-    // Translation
-    t: {
-        x: 0,
-        y: 0,
-        z: 0},
-    // Rotation in degrees
-    rd: {
-        x: 0,
-        y: 0,
-        z: 0},
-    // Rotation in radians
-    rr: {
-        x: 0,
-        y: 0,
-        z: 0},
-    // Scale
-    s: {
-        x: 1,
-        y: 1,
-        z: 1},
+class Object3D {
+
+  constructor(id, position=[0,0,0], rotation=[0,0,0], scale=[1,1,1]){
+    this.id = id
+    this.position = position 
+    this.rotation = rotation 
+    this.scale = scale 
+    this.matrix = twgl.m4.create() 
+    this.modelViewMatrix = twgl.m4.create()
+  }
 }
 
 const agent_server_uri = "http://localhost:8585/"
 
-const agents = {}
+const agents = []
+const obstacles = []
 
-let gl, programInfo, arrays, bufferInfo, vao;
-let cameraPosition = [0, 0, 0]
+let gl, programInfo, agentArrays, obstacleArrays, agentsBufferInfo, obstaclesBufferInfo, agentsVao, obstaclesVao;
+let cameraPosition = {x:0, y:0, z:20}
+
+const data = {
+  NAgents: 5,
+  width: 10,
+  height: 10
+}
 
 async function main() {
     const canvas = document.querySelector('canvas');
     gl = canvas.getContext('webgl2');
 
-
     programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
 
-    arrays = generateData(1);
+    agentArrays = generateData(1);
+    obstacleArrays = generateData(1);
 
-    bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+    agentsBufferInfo = twgl.createBufferInfoFromArrays(gl, agentArrays);
+    obstaclesBufferInfo = twgl.createBufferInfoFromArrays(gl, obstacleArrays);
 
-    vao = twgl.createVAOFromBufferInfo(gl, programInfo, bufferInfo);
+    agentsVao = twgl.createVAOFromBufferInfo(gl, programInfo, agentsBufferInfo);
+    obstaclesVao = twgl.createVAOFromBufferInfo(gl, programInfo, obstaclesBufferInfo);
 
     setupUI();
+
     await initAgentsModel()
     await getAgents()
+    await getObstacles()
 
-    drawScene(gl, programInfo, vao, bufferInfo);
+    drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo);
 }
 
 async function initAgentsModel(){
-  const data = {
-    NAgents: "5",
-    width: 20,
-    height: 20
-  }
 
   try {
 
@@ -121,74 +115,118 @@ async function getAgents(){
       console.log(result.positions)
 
       for (const agent of result.positions) {
-        agents[agent.id] = {x:agent.x, y:agent.y, z:agent.z}
+        const newAgent = new Object3D(agent.id, [agent.x, agent.y, agent.z])
+        agents.push(newAgent)
       }
       console.log("Agents:", agents)
     }
 
   } catch (error) {
-    
+    console.log(error) 
   }
 }
 
-// Function to do the actual display of the objects
-function drawScene(gl, programInfo, vao, bufferInfo) {
+async function getObstacles(){
+
+  try {
+    let response = await fetch(agent_server_uri + "getObstacles") 
+
+    if(response.ok){
+      let result = await response.json()
+
+      for (const obstacle of result.positions) {
+        const newObstacle = new Object3D(obstacle.id, [obstacle.x, obstacle.y, obstacle.z])
+        obstacles.push(newObstacle)
+      }
+      console.log("Obstacles:", obstacles)
+    }
+
+  } catch (error) {
+    console.log(error) 
+  }
+}
+
+function drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo) {
     twgl.resizeCanvasToDisplaySize(gl.canvas);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    // Clear the canvas
     gl.clearColor(0, 0, 0, 1);
+    gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    // tell webgl to cull faces
-    gl.enable(gl.CULL_FACE);
-
-    // All cubes will use the same program and vertices
     gl.useProgram(programInfo.program);
-    gl.bindVertexArray(vao);
 
     const viewProjectionMatrix = setupWorldView(gl);
 
-    // Convert the global transform values into twgl vectors
-    let v3_trans = twgl.v3.create(object.t.x, object.t.y, object.t.z);
-    let v3_scale = twgl.v3.create(object.s.x, object.s.y, object.s.z);
+    const distance = 1
 
-    // Draw multiple copies of the same cube
-    const distance = 3;        
-    
-    for(const agent in agents){
-      let x = agent.x * distance, y = agent.y * distance, z = agent.z
-      
-      const cube_trans = twgl.v3.create(x, y, z);
+    drawAgents(distance, agentsVao, agentsBufferInfo, viewProjectionMatrix)    
+    drawObstacles(distance, obstaclesVao, obstaclesBufferInfo, viewProjectionMatrix)
+}
 
-      let matrix = twgl.m4.translate(viewProjectionMatrix, cube_trans);
-      matrix = twgl.m4.translate(matrix, v3_trans);
-      matrix = twgl.m4.rotateX(matrix, object.rr.x);
-      matrix = twgl.m4.rotateY(matrix, object.rr.y);
-      matrix = twgl.m4.rotateZ(matrix, object.rr.z);
-      matrix = twgl.m4.scale(matrix, v3_scale);
+function drawAgents(distance, agentsVao, agentsBufferInfo, viewProjectionMatrix){
+
+    gl.bindVertexArray(agentsVao);
+    for(const agent of agents){
+
+      let x = agent.position[0] * distance, y = agent.position[1] * distance, z = agent.position[2]
+
+      const cube_trans = twgl.v3.create(...agent.position);
+      const cube_scale = twgl.v3.create(...agent.scale);
+
+      agent.matrix = twgl.m4.translate(viewProjectionMatrix, cube_trans);
+      agent.matrix = twgl.m4.rotateX(agent.matrix, agent.rotation[0]);
+      agent.matrix = twgl.m4.rotateY(agent.matrix, agent.rotation[1]);
+      agent.matrix = twgl.m4.rotateZ(agent.matrix, agent.rotation[2]);
+      agent.matrix = twgl.m4.scale(agent.matrix, cube_scale);
 
       let uniforms = {
-          u_matrix: matrix,
+          u_matrix: agent.matrix,
       }
+
       twgl.setUniforms(programInfo, uniforms);
-      twgl.drawBufferInfo(gl, bufferInfo);
+      twgl.drawBufferInfo(gl, agentsBufferInfo);
+      
+    }
+
+}
+
+function drawObstacles(distance, obstaclesVao, obstaclesBufferInfo, viewProjectionMatrix){
+
+    gl.bindVertexArray(obstaclesVao);
+    for(const obstacle of obstacles){
+
+      const cube_trans = twgl.v3.create(...obstacle.position);
+      const cube_scale = twgl.v3.create(...obstacle.scale);
+
+      obstacle.matrix = twgl.m4.translate(viewProjectionMatrix, cube_trans);
+      obstacle.matrix = twgl.m4.rotateX(obstacle.matrix, obstacle.rotation[0]);
+      obstacle.matrix = twgl.m4.rotateY(obstacle.matrix, obstacle.rotation[1]);
+      obstacle.matrix = twgl.m4.rotateZ(obstacle.matrix, obstacle.rotation[2]);
+      obstacle.matrix = twgl.m4.scale(obstacle.matrix, cube_scale);
+
+      let uniforms = {
+          u_matrix: obstacle.matrix,
+      }
+
+      twgl.setUniforms(programInfo, uniforms);
+      twgl.drawBufferInfo(gl, obstaclesBufferInfo);
       
     }
 }
 
 function setupWorldView(gl) {
-    // Field of view of 60 degrees, in radians
-    const fov = 60 * Math.PI / 180;
+    const fov = 45 * Math.PI / 180;
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
-    // Matrices for the world view
     const projectionMatrix = twgl.m4.perspective(fov, aspect, 1, 200);
 
-    const target = [0, 0, 0];
+    const target = [data.width/2, 0, data.height/2];
     const up = [0, 1, 0];
-    const cameraMatrix = twgl.m4.lookAt(cameraPosition, target, up);
+
+    const camPos = twgl.v3.create(cameraPosition.x + data.width/2, cameraPosition.y, cameraPosition.z+data.height/2)
+    const cameraMatrix = twgl.m4.lookAt(camPos, target, up);
 
     const viewMatrix = twgl.m4.inverse(cameraMatrix);
 
@@ -199,64 +237,20 @@ function setupWorldView(gl) {
 function setupUI() {
     const gui = new GUI();
     const posFolder = gui.addFolder('Position:')
-    posFolder.add( object.t, 'x', -50, 50)
+    posFolder.add(cameraPosition, 'x', -50, 50)
         .onChange( value => {
-            object.t.x = value,
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);
+            cameraPosition.x = value
+            drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo);
         });
-    posFolder.add( object.t, 'y', -50, 50)
+    posFolder.add( cameraPosition, 'y', -50, 50)
         .onChange( value => {
-            object.t.y = value,
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);;
+            cameraPosition.y = value,
+            drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo);
         });
-    posFolder.add( object.t, 'z', -50, 50)
+    posFolder.add( cameraPosition, 'z', -50, 50)
         .onChange( value => {
-            object.t.z = value,
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);;
-        });
-    const rotFolder = gui.addFolder('Rotation:')
-    rotFolder.add( object.rd, 'x', 0, 360)
-        .onChange( value => {
-            object.rd.x = value
-            object.rr.x = object.rd.x * Math.PI / 180;
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);;
-        });
-    rotFolder.add( object.rd, 'y', 0, 360)
-        .onChange( value => {
-            object.rd.y = value
-            object.rr.y = object.rd.y * Math.PI / 180;
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);;
-        });
-    rotFolder.add( object.rd, 'z', 0, 360)
-        .onChange( value => {
-            object.rd.z = value
-            object.rr.z = object.rd.z * Math.PI / 180;
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);;
-        });
-    const scaFolder = gui.addFolder('Scale:')
-    scaFolder.add( object.s, 'x', -50, 50)
-        .onChange( value => {
-            object.s.x = value;
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);;
-        });
-    scaFolder.add( object.s, 'y', -50, 50)
-        .onChange( value => {
-            object.s.y = value;
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);;
-        });
-    scaFolder.add( object.s, 'z', -50, 50)
-        .onChange( value => {
-            object.s.z = value;
-            setupUI()
-            drawScene(gl, programInfo, vao, bufferInfo);;
+            cameraPosition.z = value,
+            drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo);
         });
 }
 
@@ -267,40 +261,40 @@ function generateData(size) {
                 numComponents: 3,
                 data: [
                   // Front Face
-                  -1.0, -1.0,  1.0,
-                  1.0, -1.0,  1.0,
-                  1.0,  1.0,  1.0,
-                 -1.0,  1.0,  1.0,
+                  -0.5, -0.5,  0.5,
+                  0.5, -0.5,  0.5,
+                  0.5,  0.5,  0.5,
+                 -0.5,  0.5,  0.5,
 
                  // Back face
-                 -1.0, -1.0, -1.0,
-                 -1.0,  1.0, -1.0,
-                  1.0,  1.0, -1.0,
-                  1.0, -1.0, -1.0,
+                 -0.5, -0.5, -0.5,
+                 -0.5,  0.5, -0.5,
+                  0.5,  0.5, -0.5,
+                  0.5, -0.5, -0.5,
 
                  // Top face
-                 -1.0,  1.0, -1.0,
-                 -1.0,  1.0,  1.0,
-                  1.0,  1.0,  1.0,
-                  1.0,  1.0, -1.0,
+                 -0.5,  0.5, -0.5,
+                 -0.5,  0.5,  0.5,
+                  0.5,  0.5,  0.5,
+                  0.5,  0.5, -0.5,
 
                  // Bottom face
-                 -1.0, -1.0, -1.0,
-                  1.0, -1.0, -1.0,
-                  1.0, -1.0,  1.0,
-                 -1.0, -1.0,  1.0,
+                 -0.5, -0.5, -0.5,
+                  0.5, -0.5, -0.5,
+                  0.5, -0.5,  0.5,
+                 -0.5, -0.5,  0.5,
 
                  // Right face
-                  1.0, -1.0, -1.0,
-                  1.0,  1.0, -1.0,
-                  1.0,  1.0,  1.0,
-                  1.0, -1.0,  1.0,
+                  0.5, -0.5, -0.5,
+                  0.5,  0.5, -0.5,
+                  0.5,  0.5,  0.5,
+                  0.5, -0.5,  0.5,
 
                  // Left face
-                 -1.0, -1.0, -1.0,
-                 -1.0, -1.0,  1.0,
-                 -1.0,  1.0,  1.0,
-                 -1.0,  1.0, -1.0
+                 -0.5, -0.5, -0.5,
+                 -0.5, -0.5,  0.5,
+                 -0.5,  0.5,  0.5,
+                 -0.5,  0.5, -0.5
                 ].map(e => size * e)
             },
         a_color: {
