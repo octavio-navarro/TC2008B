@@ -35,11 +35,11 @@ outColor = v_color;
 // Define the Object3D class to represent 3D objects
 class Object3D {
   constructor(id, position=[0,0,0], rotation=[0,0,0], scale=[1,1,1]){
-  this.id = id;
-  this.position = position;
-  this.rotation = rotation;
-  this.scale = scale;
-  this.matrix = twgl.m4.create();
+    this.id = id;
+    this.position = position;
+    this.rotation = rotation;
+    this.scale = scale;
+    this.matrix = twgl.m4.create();
   }
 }
 
@@ -61,9 +61,9 @@ let frameCount = 0;
 
 // Define the data object
 const data = {
-  NAgents: 5,
-  width: 10,
-  height: 10
+  NAgents: 500,
+  width: 100,
+  height: 100
 };
 
 // Main function to initialize and run the application
@@ -286,8 +286,6 @@ function drawAgents(distance, agentsVao, agentsBufferInfo, viewProjectionMatrix)
 
     // Iterate over the agents
     for(const agent of agents){
-      // Calculate the agent's position
-      let x = agent.position[0] * distance, y = agent.position[1] * distance, z = agent.position[2]
 
       // Create the agent's transformation matrix
       const cube_trans = twgl.v3.create(...agent.position);
