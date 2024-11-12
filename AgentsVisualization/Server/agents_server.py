@@ -99,7 +99,7 @@ def updateModel():
             randomModel.step()
             currentStep += 1
             return jsonify({'message':f'Model updated to step {currentStep}.', 'currentStep':currentStep})
-        except Expection as e:
+        except Exception as e:
             print(e)
             return jsonify({"message":"Error during step."}), 500
 

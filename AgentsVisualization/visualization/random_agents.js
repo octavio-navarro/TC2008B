@@ -40,7 +40,6 @@ class Object3D {
     this.rotation = rotation 
     this.scale = scale 
     this.matrix = twgl.m4.create() 
-    this.modelViewMatrix = twgl.m4.create()
   }
 }
 
@@ -50,7 +49,8 @@ const agents = []
 const obstacles = []
 
 let gl, programInfo, agentArrays, obstacleArrays, agentsBufferInfo, obstaclesBufferInfo, agentsVao, obstaclesVao;
-let cameraPosition = {x:0, y:0, z:20}
+let cameraPosition = {x:0, y:9, z:9}
+let frameCount = 0
 
 const data = {
   NAgents: 5,
@@ -65,7 +65,7 @@ async function main() {
     programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
 
     agentArrays = generateData(1);
-    obstacleArrays = generateData(1);
+    obstacleArrays = generateObstacleData(1);
 
     agentsBufferInfo = twgl.createBufferInfoFromArrays(gl, agentArrays);
     obstaclesBufferInfo = twgl.createBufferInfoFromArrays(gl, obstacleArrays);
@@ -79,7 +79,7 @@ async function main() {
     await getAgents()
     await getObstacles()
 
-    drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo);
+    await drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo)
 }
 
 async function initAgentsModel(){
@@ -114,11 +114,23 @@ async function getAgents(){
 
       console.log(result.positions)
 
-      for (const agent of result.positions) {
-        const newAgent = new Object3D(agent.id, [agent.x, agent.y, agent.z])
-        agents.push(newAgent)
+      if(agents.length == 0){
+        for (const agent of result.positions) {
+          const newAgent = new Object3D(agent.id, [agent.x, agent.y, agent.z])
+          agents.push(newAgent)
+        }
+        console.log("Agents:", agents)
+
+      } else {
+
+        for (const agent of result.positions) {
+        const current_agent = agents.find((object3d) => object3d.id == agent.id)
+
+          if(current_agent != undefined){
+            current_agent.position = [agent.x, agent.y, agent.z]
+          }
+        }
       }
-      console.log("Agents:", agents)
     }
 
   } catch (error) {
@@ -146,12 +158,27 @@ async function getObstacles(){
   }
 }
 
-function drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo) {
+async function update(){
+ 
+  try {
+    let response = await fetch(agent_server_uri + "update") 
+
+    if(response.ok){
+      await getAgents()
+      console.log("Updated agents")
+    }
+
+  } catch (error) {
+    console.log(error) 
+  }
+}
+
+async function drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo) {
     twgl.resizeCanvasToDisplaySize(gl.canvas);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    gl.clearColor(0, 0, 0, 1);
+    gl.clearColor(0.2, 0.2, 0.2, 1);
     gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -163,6 +190,15 @@ function drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, o
 
     drawAgents(distance, agentsVao, agentsBufferInfo, viewProjectionMatrix)    
     drawObstacles(distance, obstaclesVao, obstaclesBufferInfo, viewProjectionMatrix)
+
+    frameCount++
+
+    if(frameCount%30 == 0){
+      frameCount = 0
+      await update()
+    } 
+
+    requestAnimationFrame(()=>drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo))
 }
 
 function drawAgents(distance, agentsVao, agentsBufferInfo, viewProjectionMatrix){
@@ -240,17 +276,14 @@ function setupUI() {
     posFolder.add(cameraPosition, 'x', -50, 50)
         .onChange( value => {
             cameraPosition.x = value
-            drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo);
         });
     posFolder.add( cameraPosition, 'y', -50, 50)
         .onChange( value => {
-            cameraPosition.y = value,
-            drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo);
+            cameraPosition.y = value
         });
     posFolder.add( cameraPosition, 'z', -50, 50)
         .onChange( value => {
-            cameraPosition.z = value,
-            drawScene(gl, programInfo, agentsVao, agentsBufferInfo, obstaclesVao, obstaclesBufferInfo);
+            cameraPosition.z = value
         });
 }
 
@@ -345,10 +378,101 @@ function generateData(size) {
             }
     };
 
-    // console.log("ATTRIBUTES:")
-    // console.log(arrays);
-
     return arrays;
 }
 
+function generateObstacleData(size){
+
+    let arrays =
+    {
+        a_position: {
+                numComponents: 3,
+                data: [
+                  // Front Face
+                  -0.5, -0.5,  0.5,
+                  0.5, -0.5,  0.5,
+                  0.5,  0.5,  0.5,
+                 -0.5,  0.5,  0.5,
+
+                 // Back face
+                 -0.5, -0.5, -0.5,
+                 -0.5,  0.5, -0.5,
+                  0.5,  0.5, -0.5,
+                  0.5, -0.5, -0.5,
+
+                 // Top face
+                 -0.5,  0.5, -0.5,
+                 -0.5,  0.5,  0.5,
+                  0.5,  0.5,  0.5,
+                  0.5,  0.5, -0.5,
+
+                 // Bottom face
+                 -0.5, -0.5, -0.5,
+                  0.5, -0.5, -0.5,
+                  0.5, -0.5,  0.5,
+                 -0.5, -0.5,  0.5,
+
+                 // Right face
+                  0.5, -0.5, -0.5,
+                  0.5,  0.5, -0.5,
+                  0.5,  0.5,  0.5,
+                  0.5, -0.5,  0.5,
+
+                 // Left face
+                 -0.5, -0.5, -0.5,
+                 -0.5, -0.5,  0.5,
+                 -0.5,  0.5,  0.5,
+                 -0.5,  0.5, -0.5
+                ].map(e => size * e)
+            },
+        a_color: {
+                numComponents: 4,
+                data: [
+                  // Front face
+                    0, 0, 0, 1, // v_1
+                    0, 0, 0, 1, // v_1
+                    0, 0, 0, 1, // v_1
+                    0, 0, 0, 1, // v_1
+                    // 0.1667, 0.1667, 0.1667, 1, // v_1
+                  // Back Face
+                    0.333, 0.333, 0.333, 1, // v_2
+                    0.333, 0.333, 0.333, 1, // v_2
+                    0.333, 0.333, 0.333, 1, // v_2
+                    0.333, 0.333, 0.333, 1, // v_2
+                  // Top Face
+                    0.5, 0.5, 0.5, 1, // v_3
+                    0.5, 0.5, 0.5, 1, // v_3
+                    0.5, 0.5, 0.5, 1, // v_3
+                    0.5, 0.5, 0.5, 1, // v_3
+                  // Bottom Face
+                    0.666, 0.666, 0.666, 1, // v_4
+                    0.666, 0.666, 0.666, 1, // v_4
+                    0.666, 0.666, 0.666, 1, // v_4
+                    0.666, 0.666, 0.666, 1, // v_4
+                  // Right Face
+                    0.833, 0.833, 0.833, 1, // v_5
+                    0.833, 0.833, 0.833, 1, // v_5
+                    0.833, 0.833, 0.833, 1, // v_5
+                    0.833, 0.833, 0.833, 1, // v_5
+                  // Left Face
+                    1, 1, 1, 1, // v_6
+                    1, 1, 1, 1, // v_6
+                    1, 1, 1, 1, // v_6
+                    1, 1, 1, 1, // v_6
+                ]
+            },
+        indices: {
+                numComponents: 3,
+                data: [
+                  0, 1, 2,      0, 2, 3,    // Front face
+                  4, 5, 6,      4, 6, 7,    // Back face
+                  8, 9, 10,     8, 10, 11,  // Top face
+                  12, 13, 14,   12, 14, 15, // Bottom face
+                  16, 17, 18,   16, 18, 19, // Right face
+                  20, 21, 22,   20, 22, 23  // Left face
+                ]
+            }
+    };
+    return arrays;
+}
 main()
