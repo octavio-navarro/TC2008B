@@ -87,20 +87,27 @@ function drawScene() {
     const viewProjectionMatrix = setupViewProjection(gl);
 
     // Prepare the vector for translation and scale
-    // COMPLETE THIS SECTION //
-
-
+    const traV3 = [objects.model.transforms.t.x,
+                   objects.model.transforms.t.y,
+                   objects.model.transforms.t.z];
+    const scaV3 = [objects.model.transforms.s.x,
+                   objects.model.transforms.s.y,
+                   objects.model.transforms.s.z];
 
     // Create the individual transform matrices
-    // COMPLETE THIS SECTION //
-
-
+    const traMat = m4.translation(traV3);
+    const rotXMat = m4.rotationX(objects.model.transforms.rr.x);
+    const rotYMat = m4.rotationY(objects.model.transforms.rr.y);
+    const rotZMat = m4.rotationZ(objects.model.transforms.rr.z);
+    const scaMat = m4.scale(scaV3);
 
     // Create the composite matrix with all transformations
     let transforms = m4.identity();
-    // COMPLETE THIS SECTION //
-
-
+    transforms = m4.multiply(scaMat, transforms);
+    transforms = m4.multiply(rotXMat, transforms);
+    transforms = m4.multiply(rotYMat, transforms);
+    transforms = m4.multiply(rotZMat, transforms);
+    transforms = m4.multiply(traMat, transforms);
 
     // Apply the projection to the final matrix
     transforms = m4.multiply(viewProjectionMatrix, transforms);

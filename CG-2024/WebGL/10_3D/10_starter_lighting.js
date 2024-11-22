@@ -15,8 +15,8 @@ import { v3, m4 } from '../libs/starter_3D_lib';
 // Read the whole input file as a string
 // https://vitejs.dev/guide/assets.html#importing-asset-as-string
 // Define the shader code, using GLSL 3.00
-import vsGLSL from './../assets/shaders/vs_color.glsl?raw';
-import fsGLSL from './../assets/shaders/fs_color.glsl?raw';
+import vsGLSL from './../assets/shaders/vs_phong_301.glsl?raw';
+import fsGLSL from './../assets/shaders/fs_phong_301.glsl?raw';
 import { cubeFaceColors } from '../00_common/shapes';
 
 // Variables used for the object, and coltrolled from the UI
@@ -137,7 +137,6 @@ function drawScene(gl) {
                              object.transforms.s.y,
                              object.transforms.s.z);
 
-    /*
     // Variable with the position of the light
     let v3_lightPosition = v3.create(settings.lightPosition.x,
                                      settings.lightPosition.y,
@@ -154,7 +153,6 @@ function drawScene(gl) {
         u_specularLight: settings.specularColor,
     };
     twgl.setUniforms(programInfo, globalUniforms);
-    */
 
     // Matrices for the object world transforms
     const traMat = m4.translation(v3_trans);
@@ -176,7 +174,6 @@ function drawScene(gl) {
 
     let modelUniforms = {
         u_transforms: worldViewProjection,
-        /*
         u_world: world,
         u_worldInverseTransform: transformsInverseTranspose,
         u_worldViewProjection: worldViewProjection,
@@ -184,7 +181,6 @@ function drawScene(gl) {
         u_diffuseColor: object.model.diffuseColor,
         u_specularColor: object.model.specularColor,
         u_shininess: object.model.shininess,
-        */
     }
     twgl.setUniforms(programInfo, modelUniforms);
     //console.log("MODEL UNIFORMS");
@@ -277,6 +273,7 @@ function main() {
     programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
     // Set the default shape to be used
     arrays = cubeFaceColors(2);
+    arrays = loadOBJ(fileContents);
     // Configure the Phong colors
     arrays.a_ambientColor = object.model.ambientColor;
     arrays.a_diffuseColor = object.model.diffuseColor;
