@@ -2,7 +2,7 @@
 
 //const url = 'http://52.1.3.19:8585/api/';
 const url = 'http://localhost:5000/api/';
-const endpoint = 'avgAttempts';
+const endpoint = 'AllAttempts';
 
 let chart = null;
 let intervalID = null;
@@ -14,7 +14,7 @@ const colors = [
     'rgba(75, 192, 192, 0.5)',
     'rgba(54, 162, 235, 0.5)',
     'rgba(153, 102, 255, 0.5)',
-    'rgba(201, 203, 207, 0.5)'
+    'rgba(201, 20, 20, 0.5)'
 ];
 
 async function getData(url) {
@@ -34,8 +34,13 @@ async function load_charts() {
     chart = new Chart(ctx, {
     type: 'bar',
     data: {
-        datasets: [{
-            label: 'Average cars that reached the end',
+        datasets: [
+        {
+          label: 'Total cars in simulation',
+          borderWidth: 1
+        },
+        {
+            label: 'Total cars that reached the end',
             borderWidth: 1
         }]
     },
@@ -57,16 +62,18 @@ async function update_chart(){
         const classRoomID = document.getElementById('classRoomID').value;  
         const query = url + endpoint + '/' + yearID + '/' + classRoomID;  
         const data = await getData(query);
-        
-        const teamNames = data.map((row) => row['Team']);
-        const values = data.map((row) => row['Average']);
-        const bgColors = teamNames.map((name, index) => colors[index % colors.length]);
-        
-        console.log(teamNames, values, bgColors);
 
+        const teamNames = data.map((row) => row['Team_name']);
+        const valuesCurrent = data.map((row) => row['attempt_current_cars']);
+        const valuesArrived = data.map((row) => row['attempt_total_arrived']);
+        const bgColorsCurrent = teamNames.map((name, index) => colors[index % colors.length]);
+        const bgColorsArrived = teamNames.map((name, index) => colors[index + 2 % colors.length]);
+        
         chart.data.labels = teamNames;
-        chart.data.datasets[0].data = values;
-        chart.data.datasets[0].backgroundColor = bgColors;
+        chart.data.datasets[0].data = valuesCurrent;
+        chart.data.datasets[1].data = valuesArrived;
+        chart.data.datasets[0].backgroundColor = bgColorsCurrent;
+        chart.data.datasets[1].backgroundColor = bgColorsArrived;
 
         chart.update();
     }

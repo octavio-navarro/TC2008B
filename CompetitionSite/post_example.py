@@ -5,10 +5,11 @@ url = "http://localhost:5000/api/"
 endpoint = "validate_attempt"
 
 data = {
-    "year" : 2020,
+    "year" : 2024,
     "classroom" : 301,
     "name" : "Equipo 1",
-    "num_cars": 50
+    "current_cars": 50,
+    "total_arrived": 10
 }
 
 headers = {

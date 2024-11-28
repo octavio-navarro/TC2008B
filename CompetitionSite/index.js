@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 
 const limiter = ratelimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10, // 10 requests per minute
+  max: 1000, // 1000 requests per minute
 });
 
 // Middleware

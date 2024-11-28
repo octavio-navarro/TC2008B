@@ -44,12 +44,12 @@ function validateAttempt(req, res){
     let status = 200;
     let message = "Attempt is valid";
   
-    if(attempt.year === undefined || attempt.classroom === undefined || attempt.name === undefined || attempt.num_cars === undefined){
+    if(attempt.year === undefined || attempt.classroom === undefined || attempt.name === undefined || attempt.current_cars === undefined || attempt.total_arrived===undefined){
       status = 400;
       message = "Missing parameters";
     }
 
-    if(typeof attempt.year !== 'number' || typeof attempt.classroom !== 'number' || typeof attempt.name !== 'string' || typeof attempt.num_cars !== 'number'){
+    if(typeof attempt.year !== 'number' || typeof attempt.classroom !== 'number' || typeof attempt.name !== 'string' || typeof attempt.current_cars !== 'number' || typeof attempt.total_arrived !== 'number'){
       status = 400;
       message = "Invalid parameters";
     }
@@ -64,22 +64,22 @@ function validateAttempt(req, res){
 }
 
 async function getAllAttempts(req, res){
-  
+    
     let databaseController = null;
   
     try{
       databaseController = new DatabaseController();
   
       await databaseController.connect();
-
+  
       const query = `SELECT * FROM all_attempts` + (req.params.year !== undefined ? ` WHERE Team_year = ?` : '') + (req.params.classroom !== undefined ? ` AND Team_classroom = ?` : '');
-
+  
       const params = [];
-
+  
       if(req.params.year !== undefined){
         params.push(req.params.year);
       }
-
+  
       if(req.params.classroom !== undefined){
         params.push(req.params.classroom);
       }
@@ -97,7 +97,6 @@ async function getAllAttempts(req, res){
         databaseController.disconnect();
       }
     }
-  
 }
 
 async function getAverageAttempts(req, res){
@@ -134,8 +133,6 @@ async function getAverageAttempts(req, res){
         databaseController.disconnect();
       }
     }
-  
-  
 }
 
 async function uploadAttempt(req, res){
@@ -167,15 +164,15 @@ async function uploadAttempt(req, res){
     }
 
     // year, classroom, name, numcars
-    const insertQuery = `INSERT INTO Attempts (Team_ID, attempt_num_cars, attempt_datetime) VALUES (?, ?, ?)`;
+    const insertQuery = `INSERT INTO Attempts (Team_ID, attempt_current_cars, attempt_datetime, attempt_total_arrived) VALUES (?, ?, ?, ?)`;
     
     // Insert the attempt into the database
 
     const datetime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-    console.log(`Inserting values: ${teamId}, ${attempt.num_cars}, ${datetime}`)
+    console.log(`Inserting values: ${teamId}, ${attempt.current_cars}, ${attempt.total_arrived} ${datetime}`)
 
-    const [results_insert, fields_insert] = await databaseController.connection.execute(insertQuery, [teamId, attempt.num_cars, datetime]);
+    const [results_insert, fields_insert] = await databaseController.connection.execute(insertQuery, [teamId, attempt.current_cars,  datetime, attempt.total_arrived]);
 
     res.status(200).json({message: "Attempt uploaded successfully"});
   }

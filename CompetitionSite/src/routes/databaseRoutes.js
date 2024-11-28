@@ -16,8 +16,8 @@ dbRouter.get('/avgAttempts',cache('2 minutes'), databaseController.getAverageAtt
 
 dbRouter.get('/avgAttempts/:year/:classroom',cache('2 minutes'), databaseController.getAverageAttempts);
 
-dbRouter.post('/validate_attempt',cache('2 minutes'), databaseController.validateAttempt);
+dbRouter.post('/validate_attempt', databaseController.validateAttempt);
 
-dbRouter.post('/attempts',cache('2 minutes'), databaseController.uploadAttempt);
+dbRouter.post('/attempt', databaseController.uploadAttempt);
 
 export {dbRouter};
