@@ -118,7 +118,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `avg_attempts` AS select `all_attempts`.`Team_year` AS `Year`,`all_attempts`.`Team_classroom` AS `Classroom`,`all_attempts`.`Team_name` AS `Team`,avg(`all_attempts`.`attempt_current_cars`) AS `Average current cars`,avg(`all_attempts`.`attempt_total_arrived`) AS `Average total arrived` from `all_attempts` group by `all_attempts`.`Team_year`,`all_attempts`.`Team_classroom`,`all_attempts`.`Team_name` order by `all_attempts`.`Team_year`,`all_attempts`.`Team_classroom`,`all_attempts`.`Team_name` */;
+/*!50001 VIEW `avg_attempts` AS select `all_attempts`.`Team_year` AS `Year`,`all_attempts`.`Team_classroom` AS `Classroom`,`all_attempts`.`Team_name` AS `Team`,max(`all_attempts`.`attempt_current_cars`) AS `Average current cars`,max(`all_attempts`.`attempt_total_arrived`) AS `Average total arrived` from `all_attempts` group by `all_attempts`.`Team_year`,`all_attempts`.`Team_classroom`,`all_attempts`.`Team_name` order by `all_attempts`.`Team_year`,`all_attempts`.`Team_classroom`,`all_attempts`.`Team_name` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -132,4 +132,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-28  3:35:40
+-- Dump completed on 2024-11-28 12:04:36
