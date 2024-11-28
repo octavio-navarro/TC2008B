@@ -38,6 +38,16 @@ CREATE TABLE `Attempts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `Attempts`
+--
+
+LOCK TABLES `Attempts` WRITE;
+/*!40000 ALTER TABLE `Attempts` DISABLE KEYS */;
+INSERT INTO `Attempts` VALUES (1,1,50,'2023-11-29 05:59:27',0),(2,1,50,'2023-11-29 05:59:39',0),(3,1,50,'2023-11-29 06:01:25',0),(4,1,50,'2023-11-29 06:02:51',0),(5,1,50,'2023-11-29 06:03:33',0),(6,2,50,'2023-11-29 06:03:41',0),(7,2,50,'2023-11-29 06:05:08',0),(8,3,50,'2023-11-29 06:30:31',0),(9,4,50,'2023-11-29 06:32:42',0),(10,5,3,'2023-11-30 08:36:22',0),(11,6,50,'2024-11-28 09:12:16',10),(12,6,50,'2024-11-28 09:14:32',10),(13,6,60,'2024-11-28 09:16:53',10),(14,6,60,'2024-11-28 09:18:32',15),(15,6,60,'2024-11-28 09:18:35',16),(16,6,60,'2024-11-28 09:25:53',11);
+/*!40000 ALTER TABLE `Attempts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Teams`
 --
 
@@ -53,6 +63,16 @@ CREATE TABLE `Teams` (
   UNIQUE KEY `Team_ID_UNIQUE` (`Team_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Teams`
+--
+
+LOCK TABLES `Teams` WRITE;
+/*!40000 ALTER TABLE `Teams` DISABLE KEYS */;
+INSERT INTO `Teams` VALUES (1,2023,301,'Equipo0'),(2,2023,301,'Equipo1'),(3,2023,302,'Equipo1'),(4,2023,302,'Equipo2'),(5,2023,301,'Equipo2'),(6,2024,301,'bal');
+/*!40000 ALTER TABLE `Teams` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Temporary view structure for view `all_attempts`
@@ -80,11 +100,11 @@ DROP TABLE IF EXISTS `avg_attempts`;
 SET @saved_cs_client     = @@character_set_client;
 /*!50503 SET character_set_client = utf8mb4 */;
 /*!50001 CREATE VIEW `avg_attempts` AS SELECT 
- 1 AS `Year`,
- 1 AS `Classroom`,
- 1 AS `Team`,
- 1 AS `Average current cars`,
- 1 AS `Average total arrived`*/;
+ 1 AS `Team_year`,
+ 1 AS `Team_classroom`,
+ 1 AS `Team_name`,
+ 1 AS `attempt_current_cars`,
+ 1 AS `attempt_total_arrived`*/;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -118,7 +138,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `avg_attempts` AS select `all_attempts`.`Team_year` AS `Year`,`all_attempts`.`Team_classroom` AS `Classroom`,`all_attempts`.`Team_name` AS `Team`,max(`all_attempts`.`attempt_current_cars`) AS `Average current cars`,max(`all_attempts`.`attempt_total_arrived`) AS `Average total arrived` from `all_attempts` group by `all_attempts`.`Team_year`,`all_attempts`.`Team_classroom`,`all_attempts`.`Team_name` order by `all_attempts`.`Team_year`,`all_attempts`.`Team_classroom`,`all_attempts`.`Team_name` */;
+/*!50001 VIEW `avg_attempts` AS select `all_attempts`.`Team_year` AS `Team_year`,`all_attempts`.`Team_classroom` AS `Team_classroom`,`all_attempts`.`Team_name` AS `Team_name`,max(`all_attempts`.`attempt_current_cars`) AS `attempt_current_cars`,max(`all_attempts`.`attempt_total_arrived`) AS `attempt_total_arrived` from `all_attempts` group by `all_attempts`.`Team_year`,`all_attempts`.`Team_classroom`,`all_attempts`.`Team_name` order by `all_attempts`.`Team_year`,`all_attempts`.`Team_classroom`,`all_attempts`.`Team_name` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -132,4 +152,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-28 12:09:29
+-- Dump completed on 2024-11-28 12:17:59
