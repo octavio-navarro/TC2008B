@@ -296,10 +296,10 @@ describe('M4', () => {
                 const result = [];
                 for (let i = 0; i < 4; ++i) {
                     result[i] =
-                        model[i]     * point[0] +
-                            model[i + 4]  * point[1] +
-                            model[i + 8]  * point[2] +
-                            model[i + 12] * point[3];
+                        model[i]      * point[0] +
+                        model[i + 4]  * point[1] +
+                        model[i + 8]  * point[2] +
+                        model[i + 12] * point[3];
                 }
 
                 // Expected:
@@ -348,10 +348,10 @@ describe('M4', () => {
                 const clip = [];
                 for (let i = 0; i < 4; ++i) {
                     clip[i] =
-                        mvp[i]     * point[0] +
-                            mvp[i + 4]  * point[1] +
-                            mvp[i + 8]  * point[2] +
-                            mvp[i + 12] * point[3];
+                        mvp[i]      * point[0] +
+                        mvp[i + 4]  * point[1] +
+                        mvp[i + 8]  * point[2] +
+                        mvp[i + 12] * point[3];
                 }
 
                 // After perspective divide: clip / w
@@ -526,10 +526,10 @@ describe('M4', () => {
             const result = [];
             for (let i = 0; i < 4; ++i) {
                 result[i] =
-                    model[i]     * point[0] +
-                        model[i + 4]  * point[1] +
-                        model[i + 8]  * point[2] +
-                        model[i + 12] * point[3];
+                    model[i]      * point[0] +
+                    model[i + 4]  * point[1] +
+                    model[i + 8]  * point[2] +
+                    model[i + 12] * point[3];
             }
             // Should be at translation origin: (10,20,30,1)
             arraysAlmostEqual(new Float32Array(result), new Float32Array([10, 20, 30, 1]), 'zero scale');
@@ -558,19 +558,19 @@ describe('M4', () => {
             // Forward
             for (let i = 0; i < 4; ++i) {
                 forward[i] =
-                    model[i]     * point[0] +
-                        model[i + 4]  * point[1] +
-                        model[i + 8]  * point[2] +
-                        model[i + 12] * point[3];
+                    model[i]      * point[0] +
+                    model[i + 4]  * point[1] +
+                    model[i + 8]  * point[2] +
+                    model[i + 12] * point[3];
             }
 
             // Backward
             for (let i = 0; i < 4; ++i) {
                 back[i] =
-                    inv[i]     * forward[0] +
-                        inv[i + 4]  * forward[1] +
-                        inv[i + 8]  * forward[2] +
-                        inv[i + 12] * forward[3];
+                    inv[i]      * forward[0] +
+                    inv[i + 4]  * forward[1] +
+                    inv[i + 8]  * forward[2] +
+                    inv[i + 12] * forward[3];
             }
 
             arraysAlmostEqual(new Float32Array(back), point, 'inverse TRS');
