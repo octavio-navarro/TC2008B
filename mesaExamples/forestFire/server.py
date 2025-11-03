@@ -1,52 +1,58 @@
-from mesa.visualization import CanvasGrid, ChartModule, PieChartModule
-from mesa.visualization import ModularServer
-from mesa.visualization import Slider
+from forest_fire.model import ForestFire
 
-from model import ForestFire
+from mesa.visualization import (
+    SolaraViz,
+    make_plot_component,
+    make_space_component,
+)
 
-# The colors of the portrayal will depend on the tree's condition.
+from mesa.visualization.user_param import (
+    Slider,
+)
+
+from mesa.visualization.components import AgentPortrayalStyle
+
 COLORS = {"Fine": "#00AA00", "On Fire": "#880000", "Burned Out": "#000000"}
 
-# The portrayal is a dictionary that is used by the visualization server to
-# generate a visualization of the given agent.
+# Since it is a matplotlib visualization, you can use the markers in https://matplotlib.org/stable/api/markers_api.html
 def forest_fire_portrayal(tree):
     if tree is None:
         return
-    portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-    (x, y) = tree.pos
-    portrayal["x"] = x
-    portrayal["y"] = y
-    portrayal["Color"] = COLORS[tree.condition]
 
-    return portrayal
+    return AgentPortrayalStyle(
+            color= COLORS[tree.condition],
+            marker="+",
+    )
 
-# The canvas element will be 500x500 pixels, with each cell being 5x5 pixels.
-# The portrayal method will fill each cell with a representation of the tree
-# that is in that cell.
-canvas_element = CanvasGrid(forest_fire_portrayal, 100, 100, 500, 500)
+def post_process_space(ax):
+    ax.set_aspect("equal")
+    ax.set_xticks([])
+    ax.set_yticks([])
 
-# The chart will plot the number of each type of tree over time.
-tree_chart = ChartModule(
-    [{"Label": label, "Color": color} for label, color in COLORS.items()]
+def post_process_lines(ax):
+    ax.legend(loc="center left", bbox_to_anchor=(1, 0.9))
+
+space_component = make_space_component(
+    forest_fire_portrayal,
+    draw_grid=False,
+    post_process=post_process_space,
 )
 
-# The pie chart will plot the number of each type of tree at the current step.
-pie_chart = PieChartModule(
-    [{"Label": label, "Color": color} for label, color in COLORS.items()]
+lineplot_component = make_plot_component(
+    COLORS,
+    post_process=post_process_lines,
 )
 
-# The model parameters will be set by sliders controlling the initial density
+model = ForestFire()
 model_params = {
-    "height": 100,
-    "width": 100,
+    "height": 200,
+    "width": 200,
     "density": Slider("Tree density", 0.65, 0.01, 1.0, 0.01),
 }
 
-# The modular server is a special visualization server that allows multiple
-# elements to be displayed simultaneously, and for each of them to be updated
-# when the user interacts with them.
-server = ModularServer(
-    ForestFire, [canvas_element, tree_chart, pie_chart], "Forest Fire", model_params
+page = SolaraViz(
+    model,
+    components=[space_component, lineplot_component],
+    model_params=model_params,
+    name="Forest Fire",
 )
-
-server.launch()
