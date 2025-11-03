@@ -1,0 +1,19 @@
+{
+  "name": "WebGL",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lil-gui": "^0.19.2",
+    "mocha": "^11.7.4",
+    "twgl-base.js": "^5.5.3",
+    "vite": "^7.1.12"
+  }
+}
