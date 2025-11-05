@@ -42,14 +42,13 @@ class Cell(FixedAgent):
         ### actualizar el estado del agente siguiendo reglas específicas
 
         # Inicializar variables
-        vecino1 = True
-        vecino2 = True  
-        vecino3 = True
+        vecino1 = False
+        vecino2 = False  
+        vecino3 = False
 
         ## Encontrar a los vecinos
         for neighbor in self.neighbors:
-            # Buscar solo los vecinos inmediatamente arriba (y = self.y + 1)
-            if neighbor.y == self.y + 1:
+            if self.y == 49: # Si la cela es la del top
                 # Vecino de la derecha
                 if (neighbor.x == self.x - 1):
                     vecino1 = neighbor.is_alive
@@ -59,6 +58,18 @@ class Cell(FixedAgent):
                 # Vecino del centro
                 elif (neighbor.x == self.x + 1):
                     vecino3 = neighbor.is_alive
+            else: # Todas las demás celdas
+            # Buscar solo los vecinos inmediatamente arriba (y = self.y + 1)
+                if neighbor.y == self.y + 1:
+                    # Vecino de la derecha
+                    if (neighbor.x == self.x - 1):
+                        vecino1 = neighbor.is_alive
+                    # Vecino de la izquierda
+                    elif (neighbor.x == self.x):
+                        vecino2 = neighbor.is_alive
+                    # Vecino del centro
+                    elif (neighbor.x == self.x + 1):
+                        vecino3 = neighbor.is_alive
 
         # Assume nextState is unchanged, unless changed below.
         self._next_state = self.state
