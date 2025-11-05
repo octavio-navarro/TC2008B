@@ -19,20 +19,23 @@ class ConwaysGameOfLife(Model):
             ( 1, -1), ( 1, 0), ( 1, 1),
         ]
         """
-        self.grid = OrthogonalMooreGrid((width, height), capacity=1, torus=True)
+        self.grid = OrthogonalMooreGrid((width, height), capacity=1, torus=False)
 
         # Place a cell at each location, with some initialized to
         # ALIVE and some to DEAD.
         for cell in self.grid.all_cells:
-            Cell(
-                self,
-                cell,
-                init_state=(
-                    Cell.ALIVE
-                    if self.random.random() < initial_fraction_alive
-                    else Cell.DEAD
-                ),
-            )
+            if cell.coordinate[1] == 49:
+                Cell(
+                    self,
+                    cell,
+                    init_state=(
+                        Cell.ALIVE
+                        if self.random.random() < initial_fraction_alive
+                        else Cell.DEAD
+                    ),
+                )
+            else:
+                Cell(self, cell, init_state=Cell.DEAD)
 
         self.running = True
 
