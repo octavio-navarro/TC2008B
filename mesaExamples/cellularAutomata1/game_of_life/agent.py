@@ -38,6 +38,7 @@ class Cell(FixedAgent):
         because our current state may still be necessary for our neighbors
         to calculate their next state.
         """
+
         ### Simulación 1: Con base a los 3 vecinos de arriba de cada agente, 
         ### actualizar el estado del agente siguiendo reglas específicas
 

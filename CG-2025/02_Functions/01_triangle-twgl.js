@@ -72,9 +72,12 @@ function generateData() {
             // Two components for the coordinates in X and Y
             numComponents: 2,
             data: new Float32Array([
-                0,   0.7,
-                0.5,  -0.7,
-                -0.5,  -0.7,
+                0.5,   0.7,
+                0.95,  -0.7,
+                0.1,  -0.7,
+                -0.51,   0.7,
+                -0.95,  -0.7,
+                -0.1,  -0.7,
             ])
         },
         a_color: {
@@ -93,8 +96,12 @@ function generateData() {
                 255, 0, 0, 255,
                 0, 255, 0, 255,
                 0, 0, 255, 255,
+                0, 255, 0, 255,
+                0, 255, 255, 255,
+                255, 0, 255, 255,
             ])
-        }
+        },
+
     };
 
     return arrays;
