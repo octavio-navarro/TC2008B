@@ -48,7 +48,7 @@ class Cell(FixedAgent):
 
         ## Encontrar a los vecinos
         for neighbor in self.neighbors:
-            if self.y == 49: # Si la cela es la del top
+            if (self.y == 49 and neighbor.y == 0): # Si la celda es la del top, los vecinos serán los de abajo (línea 0)
                 # Vecino de la derecha
                 if (neighbor.x == self.x - 1):
                     vecino1 = neighbor.is_alive
