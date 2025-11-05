@@ -19,10 +19,10 @@ class ConwaysGameOfLife(Model):
             ( 1, -1), ( 1, 0), ( 1, 1),
         ]
         """
-        self.grid = OrthogonalMooreGrid((width, height), capacity=1, torus=False)
 
-        # Place a cell at each location, with some initialized to
-        # ALIVE and some to DEAD.
+        self.grid = OrthogonalMooreGrid((width, height), capacity=1, torus=True)
+
+        # Se inician alteatoriamente los estados de los agentes en las celdas de la fila superior a uno de dos estados: Alive o Dead
         for cell in self.grid.all_cells:
             if cell.coordinate[1] == 49:
                 Cell(
@@ -38,6 +38,7 @@ class ConwaysGameOfLife(Model):
                 Cell(self, cell, init_state=Cell.DEAD)
 
         self.running = True
+
 
     def step(self):
         """Perform the model step in two stages:
