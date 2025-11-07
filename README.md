@@ -13,13 +13,23 @@ The repository contains the following material:
 
 # Setup instructions
 
-- Install python. I strongly recommend using a custom venv or conda environment.
+- Environment setup. I strongly recommend using a custom venv or conda environment.
     - I recommend [miniconda](https://docs.conda.io/projects/miniconda/en/latest/) over [anaconda](https://www.anaconda.com/).
     - There is a [cheat sheet](Documents/conda-cheatsheet.pdf) in the repo with all the conda commands.
-    - Either create a new environment with python (``` conda create --name agents python ```), or use the provided environment file (``` conda env create -f agents_environment.yml```)
-- If you are using the python version on your sistem, or you created a new environment using venv, install the following packages:
-    - mesa: ```pip install mesa```
-    - flask: ```pip install flask```
+- Installation instructions:
+
+    1. Create an environment with version 3.13 of Python:
+        ```bash
+        conda create --name agents python=3.13
+        ```
+    2. Install the requirements for **mesa**:
+        ```bash
+        pip install -U "mesa[all]"
+        ```
+    3. Install **flask**:
+        ```bash
+        pip install flask flask_cors
+        ```
 - By this moment, the environment will have all the packages needed for the projects and examples to run.
 
 # References 
