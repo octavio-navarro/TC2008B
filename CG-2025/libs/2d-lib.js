@@ -36,7 +36,7 @@ class M3 {
         return [
              sx,  0,  0,
              0,  sy,  0,
-             0,  0,   0
+             0,  0,   1
         ];
     }
 
@@ -44,9 +44,9 @@ class M3 {
         let tx = vt[0];
         let ty = vt[1];
         return [
-            1,  0,  0,
-            0,  1,  0,
-            tx, ty, 1
+            1,  0,  tx,
+            0,  1,  ty,
+            0,  0,  1
         ];
     }
 
