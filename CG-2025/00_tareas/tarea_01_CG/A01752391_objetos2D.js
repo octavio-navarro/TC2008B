@@ -1,20 +1,18 @@
 /*
- * Script to draw a complex shape in 2D
+ * Script para practicar las transformaciones en objectos 2D
  *
- * Gilberto Echeverria
- * 2024-07-12
+ * Miranda Urban Solano A01752391
+ * noviembre 2025
  */
-
 
 'use strict';
 
 import * as twgl from 'twgl-base.js';
-import { shapeF } from '../libs/shapes.js';
-import { M3 } from '../libs/2d-lib.js';
+// import { shapeF } from './libs/shapes.js';
+import { M3 } from './libs/A01752391-2d-libs.js';
 import GUI from 'lil-gui';
 
 // Define the shader code, using GLSL 3.00
-
 const vsGLSL = `#version 300 es
 in vec2 a_position;
 
@@ -29,11 +27,11 @@ void main() {
     // Convert the position from pixels to 0.0 - 1.0
     vec2 zeroToOne = position / u_resolution;
 
-    // Convert from 0->1 to 0->2
+    // Convert from 0->1 to 0->2, lo hace más o menos grande proporcionalmente
     vec2 zeroToTwo = zeroToOne * 2.0;
 
-    // Convert from 0->2 to -1->1 (clip space)
-    vec2 clipSpace = zeroToTwo - 1.0;
+    // Convert from 0->2 to -1->1 (clip space) ---- posicion en donde aparece por primera vez
+    vec2 clipSpace = zeroToTwo - 0.5;
 
     // Invert Y axis
     //gl_Position = vec4(clipSpace[0], clipSpace[1] * -1.0, 0, 1);
@@ -56,7 +54,6 @@ void main() {
 
 // Structure for the global data of all objects
 // This data will be modified by the UI and used by the renderer
-// Información necesaria para 
 const objects = {
     model: {
         transforms: {
@@ -76,8 +73,54 @@ const objects = {
                 z: 1,
             }
         },
-        color: [1, 0.3, 0, 1],
+        color: [0.3, 0.5, 0.9, 0.8] // Color azul
     }
+}
+
+// Create the data for the vertices of the polyton, as an object with two arrays
+function generateData() {
+    let sides = 40;
+    let centerX = canvas.width / 4;
+    let centerY = canvas.height / 4;
+    let radius = 200;
+    let color = [0.3, 0.5, 0.9, 0.8];
+    
+    // The arrays are initially empty
+    let arrays =
+    {
+        // Two components for each position in 2D
+        a_position: { numComponents: 2, data: [] },
+        // Four components for a color (RGBA)
+        a_color:    { numComponents: 4, data: [] },
+        // Three components for each triangle, the 3 vertices
+        indices:  { numComponents: 3, data: [] }
+    };
+    
+    // Initialize the center vertex at the origin
+    arrays.a_position.data.push(centerX);
+    arrays.a_position.data.push(centerY);
+    arrays.a_color.data.push(...color);
+
+    let angleStep = 2 * Math.PI / sides;
+
+    // Loop over the sides to create the rest of the vertices
+    for (let s=0; s<sides; s++) {
+        let angle = angleStep * s;
+        // Generate the coordinates of the vertex
+        let x = centerX + Math.cos(angle) * radius;
+        let y = centerY + Math.sin(angle) * radius;
+        arrays.a_position.data.push(x);
+        arrays.a_position.data.push(y);
+        // Use a defined color for the vertex
+        arrays.a_color.data.push(color);
+        // Define the triangles, in counter clockwise order
+        arrays.indices.data.push(0);
+        arrays.indices.data.push(s + 1);
+        arrays.indices.data.push(((s + 2) <= sides) ? (s + 2) : 1);
+    }
+    console.log(arrays);
+
+    return arrays;
 }
 
 // Initialize the WebGL environmnet
@@ -91,7 +134,10 @@ function main() {
 
     const programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
 
-    const arrays = shapeF();
+    // Create a polygon with the center at a specific location
+    const arrays = generateData();
+
+    //const arrays = shapeF();
 
     const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 

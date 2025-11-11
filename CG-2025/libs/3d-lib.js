@@ -64,6 +64,11 @@ class V3 {
     static subtract(u, v, dest) {
         return [];
     }
+
+    // Multiply a vector by a scalar
+    static scale(u, s, dest){
+        return [];
+    }
 }
 
 /*

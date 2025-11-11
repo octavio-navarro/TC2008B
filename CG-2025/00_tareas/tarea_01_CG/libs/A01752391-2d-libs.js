@@ -1,7 +1,7 @@
 /*
  * Functions for 2D transformations
  *
- * Gilberto Echeverria
+ * Miranda Urban Solano A01752391
  * 2024-11-04
  */
 
@@ -21,9 +21,11 @@ class M3 {
         m[0] = 1;
         m[1] = 0;
         m[2] = 0;
+
         m[3] = 0;
         m[4] = 1;
         m[5] = 0;
+
         m[6] = 0;
         m[7] = 0;
         m[8] = 1;
