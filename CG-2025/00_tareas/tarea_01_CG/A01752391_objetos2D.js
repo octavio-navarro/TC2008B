@@ -7,11 +7,13 @@
 
 'use strict';
 
-'use strict';
-
 import * as twgl from "twgl-base.js";
+import {emojiCat} from "./libs/A01752391-shapes";
+import { M3 } from './libs/A01752391-2d-libs.js';
+import GUI from 'lil-gui';
 
-// Vertex Shader as a string
+
+/*// Vertex Shader as a string
 const vsGLSL = `#version 300 es
 in vec4 a_position;
 in vec4 a_color;
@@ -22,7 +24,7 @@ void main() {
     gl_Position = a_position;
     v_color = a_color;
 }
-`;
+`;*/
 
 // Fragment Shader as a string
 const fsGLSL = `#version 300 es
@@ -37,13 +39,14 @@ void main() {
 }
 `;
 
-function main() {
+/*function main() {
     const canvas = document.querySelector('canvas');
     const gl = canvas.getContext('webgl2');
+    
 
     const programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
 
-    const arrays = generateEmoji(); // Dibujar emoji
+    const arrays = emojiCat(); // Dibujar emoji
 
     const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
@@ -55,198 +58,119 @@ function main() {
     gl.useProgram(programInfo.program);
 
     twgl.drawBufferInfo(gl, bufferInfo);
+}*/
+
+
+// Define the shader code, using GLSL 3.00
+
+const vsGLSL = `#version 300 es
+in vec2 a_position;
+in vec4 a_color;
+
+uniform vec2 u_resolution;
+uniform mat3 u_transforms;
+
+out vec4 v_color;
+`;
+
+// Structure for the global data of all objects
+// This data will be modified by the UI and used by the renderer
+const objects = {
+    model: {
+        transforms: {
+            t: {
+                x: 0,
+                y: 0,
+                z: 0,
+            },
+            rr: {
+                x: 0,
+                y: 0,
+                z: 0,
+            },
+            s: {
+                x: 1,
+                y: 1,
+                z: 1,
+            }
+        },
+        color: [1, 0.3, 0, 1],
+    }
 }
 
-// Create the data for the vertices of the polyton, as an object with two arrays
-function generateEmoji() {
-    let yellow = [1.0, 0.8, 0.2, 1.0]; // Yellow
-    let black = [0, 0, 0, 1.0]; // Black
+// Initialize the WebGL environmnet
+function main() {
+    const canvas = document.querySelector('canvas');
+    const gl = canvas.getContext('webgl2');
+    twgl.resizeCanvasToDisplaySize(gl.canvas);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    // Initialize variables for each figure needed
-    let drawings = {
-        carita: { // Backgroung circle
-            sides: 30,
-            color: yellow,
-            pos_x: 0,
-            pos_y:0,
-            size_x : 3,
-            size_y : 2,
-        },
-        ojo1: { // Left eye
-            sides: 30,
-            color: black,
-            pos_x: -0.1,
-            pos_y: 0.15,
-            size_x : 20,
-            size_y : 10,
-        },
-        ojo2: { // Right eye
-            sides: 30,
-            color: black,
-            pos_x: 0.1,
-            pos_y: 0.15,
-            size_x : 20,
-            size_y : 10,
-        },
-        nariz:{ // Nose
-            sides: 30,
-            color: [0.4, 0.2, 0.0, 1.0], // Café para nariz de gato
-            pos_x: 0,
-            pos_y: -0.12,
-            size_x : 25,
-            size_y : 20,
-        },
-    };
+    setupUI(gl);
 
-    // The arrays are initially empty
-    let arrays =
+    const programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
+
+    const arrays = emojiCat();
+
+    const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+
+    const vao = twgl.createVAOFromBufferInfo(gl, programInfo, bufferInfo);
+
+    drawScene(gl, vao, programInfo, bufferInfo);
+}
+
+// Function to do the actual display of the objects
+function drawScene(gl, vao, programInfo, bufferInfo) {
+
+    let translate = [objects.model.transforms.t.x, objects.model.transforms.t.y];
+    let angle_radians = objects.model.transforms.rr.z;
+    let scale = [objects.model.transforms.s.x, objects.model.transforms.s.y];
+
+    // Create transform matrices
+    const scaMat = M3.scale(scale);
+    const rotMat = M3.rotation(angle_radians);
+    const traMat = M3.translation(translate);
+
+    // Create a composite matrix
+    let transforms = M3.identity();
+    transforms = M3.multiply(scaMat, transforms);
+    transforms = M3.multiply(rotMat, transforms);
+    transforms = M3.multiply(traMat, transforms);
+
+    let uniforms =
     {
-        // Two components for each position in 2D
-        a_position: { numComponents: 2, data: [] },
-        // Four components for a color (RGBA)
-        a_color:    { numComponents: 4, data: [] },
-        // Three components for each triangle, the 3 vertices
-        indices:  { numComponents: 3, data: [] }
-    };
-
-    let vertexOffset = 0; // Counter for vertices
-
-    // Draw the objects previously defined
-    for (let dr in drawings) {
-        // Initialize variables for each figure
-        let drawing = drawings[dr];
-        let color = drawing.color;
-        let sides = drawing.sides;
-        let pos_x = drawing.pos_x;
-        let pos_y = drawing.pos_y;
-        let size_x = drawing.size_x;
-        let size_y = drawing.size_y;
-        let centerIndex = vertexOffset; // For defining the center
-
-        // Initialize the center vertex, at the origin and with yellow color
-        arrays.a_position.data.push(pos_x);
-        arrays.a_position.data.push(pos_y);
-        arrays.a_color.data.push(...color);
-        vertexOffset++;
-
-        let angleStep = 2 * Math.PI / sides;
-
-        // Loop over the sides to create the rest of the vertices
-        for (let s=0; s<sides; s++) {
-            let angle = angleStep * s;
-            // Generate the coordinates of the vertex
-            let x = pos_x + Math.cos(angle) / size_x;
-            let y = pos_y + Math.sin(angle) / size_y;
-            arrays.a_position.data.push(x);
-            arrays.a_position.data.push(y);
-            // Generate a yellow color for the vertex
-            arrays.a_color.data.push(...color);
-
-            vertexOffset++; 
-        }
-
-        // Define the triangles, in counter clockwise order
-        for (let s = 0; s < sides; s++) {
-            let centerIdx = centerIndex;
-            let currentIdx = centerIndex + s + 1;
-            let nextIdx = centerIndex + ((s + 1) % sides) + 1;
-            
-            arrays.indices.data.push(centerIdx);
-            arrays.indices.data.push(currentIdx);
-            arrays.indices.data.push(nextIdx);
-        }
-        
-        console.log(arrays);
+        u_resolution: [gl.canvas.width, gl.canvas.height],
+        u_transforms: transforms,
+        u_color: objects.model.color,
     }
 
-    // Add other figures to complete the emoji
+    gl.useProgram(programInfo.program);
 
-    // Orejita 1 (izquierda)
-    arrays.a_position.data.push(-0.17, 0.7);   // Vértice 1
-    arrays.a_position.data.push(-0.25, 0.3); // Vértice 2  
-    arrays.a_position.data.push(0.1, 0.3);  // Vértice 3
+    twgl.setUniforms(programInfo, uniforms);
 
-    arrays.a_color.data.push(0.9, 0.7, 0.15, 1.0);
-    arrays.a_color.data.push(1.0, 0.8, 0.2, 1.0);
-    arrays.a_color.data.push(1.0, 0.8, 0.2, 1.0);
-    
-    arrays.indices.data.push(
-        vertexOffset, 
-        vertexOffset + 1, 
-        vertexOffset + 2
-    );
-    vertexOffset += 3;
+    gl.bindVertexArray(vao);
 
-    // Orejita 1 (izquierda adentro)
-    arrays.a_position.data.push(-0.15, 0.6);   // Vértice 1
-    arrays.a_position.data.push(-0.20, 0.4); // Vértice 2  
-    arrays.a_position.data.push(-0.05, 0.45);  // Vértice 3
+    twgl.drawBufferInfo(gl, bufferInfo);
 
-    arrays.a_color.data.push(1.0, 0.7, 0.8, 1.0);
-    arrays.a_color.data.push(1.0, 0.6, 0.8, 1.0);
-    arrays.a_color.data.push(1.0, 0.6, 0.8, 1.0);
-    
-    arrays.indices.data.push(
-        vertexOffset, 
-        vertexOffset + 1, 
-        vertexOffset + 2
-    );
-    vertexOffset += 3;
+    requestAnimationFrame(() => drawScene(gl, vao, programInfo, bufferInfo));
+}
 
-    // Orejita 2 (derecha)
-    arrays.a_position.data.push(0.17, 0.7);   // Vértice 1
-    arrays.a_position.data.push(0.25, 0.3); // Vértice 2  
-    arrays.a_position.data.push(-0.1, 0.3);  // Vértice 3
+// Recibe un objeto y las propiedades de este (x,y,z), y las modifica
+function setupUI(gl)
+{
+    const gui = new GUI();
 
-    arrays.a_color.data.push(0.9, 0.7, 0.15, 1.0);
-    arrays.a_color.data.push(1.0, 0.8, 0.2, 1.0);
-    arrays.a_color.data.push(1.0, 0.8, 0.2, 1.0);
+    const traFolder = gui.addFolder('Translation');
+    traFolder.add(objects.model.transforms.t, 'x', 0, gl.canvas.width);
+    traFolder.add(objects.model.transforms.t, 'y', 0, gl.canvas.height);
 
-    arrays.indices.data.push(
-        vertexOffset, 
-        vertexOffset + 1, 
-        vertexOffset + 2
-    );
-    vertexOffset += 3;
+    const rotFolder = gui.addFolder('Rotation');
+    rotFolder.add(objects.model.transforms.rr, 'z', 0, Math.PI * 2);
 
-    // Orejita 2 (derecha adentro)
-    arrays.a_position.data.push(0.15, 0.6);   // Vértice 1
-    arrays.a_position.data.push(0.20, 0.4); // Vértice 2  
-    arrays.a_position.data.push(0.05, 0.45);  // Vértice 3
+    const scaFolder = gui.addFolder('Scale');
+    scaFolder.add(objects.model.transforms.s, 'x', -5, 5);
+    scaFolder.add(objects.model.transforms.s, 'y', -5, 5);
 
-    arrays.a_color.data.push(1.0, 0.7, 0.8, 1.0);
-    arrays.a_color.data.push(1.0, 0.6, 0.8, 1.0);
-    arrays.a_color.data.push(1.0, 0.6, 0.8, 1.0);
-    
-    arrays.indices.data.push(
-        vertexOffset, 
-        vertexOffset + 1, 
-        vertexOffset + 2
-    );
-    vertexOffset += 3;
-
-    // Boquita
-    arrays.a_position.data.push(-0.2, -0.25);
-    arrays.a_position.data.push(-0.1, -0.3);
-    arrays.a_position.data.push(0.0, -0.32);
-    arrays.a_position.data.push(0.1, -0.3);
-    arrays.a_position.data.push(0.2, -0.25);
-
-    arrays.a_color.data.push(0, 0, 0, 1.0);
-    arrays.a_color.data.push(0, 0, 0, 1.0);
-    arrays.a_color.data.push(0, 0, 0, 1.0);
-    arrays.a_color.data.push(0, 0, 0, 1.0);
-    arrays.a_color.data.push(0, 0, 0, 1.0);
-
-    arrays.indices.data.push(
-        vertexOffset, vertexOffset + 1, vertexOffset + 2,  // Triángulo 1
-        vertexOffset + 1, vertexOffset + 2, vertexOffset + 3,  // Triángulo 2
-        vertexOffset + 2, vertexOffset + 3, vertexOffset + 4   // Triángulo 3
-    );
-
-    vertexOffset += 5;
-
-    return arrays;
+    gui.addColor(objects.model, 'color');
 }
 
 main()

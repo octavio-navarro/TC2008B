@@ -128,7 +128,7 @@ a20 a21 a22            b20 b21 b22
         // A cambia, B se mantiene igual
         // Fila 1
         ma00 * mb00 + ma10 * mb00 + ma20 * mb00, // Col 1
-        ma01 * mb00 + ma11 * mb00 + ma21 * mb00, // Col 2
+        ma01 * mb00 + ma11 * mb01 + ma21 * mb00, // Col 2
         ma02 * mb00 + ma12 * mb00 + ma22 * mb00, // Col 3
 
         // Fila 2
