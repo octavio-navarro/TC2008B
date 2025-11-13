@@ -1,3 +1,11 @@
+/*
+ * Functions for creating shapes
+ *
+ * Miranda Urban Solano A01752391
+ * noviembre 2025
+ * 
+*/
+
 // Create the data for drawing all the elements of the cat
 function emojiCat() {
     let yellow = [1.0, 0.8, 0.2, 1.0]; // Yellow
@@ -103,9 +111,9 @@ function emojiCat() {
     // Add other figures to complete the emoji
 
     // Orejita 1 (izquierda)
-    arrays.a_position.data.push(-0.17, 0.7);   // Vértice 1
-    arrays.a_position.data.push(-0.25, 0.3); // Vértice 2  
-    arrays.a_position.data.push(0.1, 0.3);  // Vértice 3
+    arrays.a_position.data.push(-0.17, 0.7);    // Vertex 1
+    arrays.a_position.data.push(-0.25, 0.3);    // Vertex 2  
+    arrays.a_position.data.push(0.1, 0.3);      // Vertex 3
 
     arrays.a_color.data.push(0.9, 0.7, 0.15, 1.0);
     arrays.a_color.data.push(1.0, 0.8, 0.2, 1.0);
@@ -119,9 +127,9 @@ function emojiCat() {
     vertexOffset += 3;
 
     // Orejita 1 (izquierda adentro)
-    arrays.a_position.data.push(-0.15, 0.6);   // Vértice 1
-    arrays.a_position.data.push(-0.20, 0.4); // Vértice 2  
-    arrays.a_position.data.push(-0.05, 0.45);  // Vértice 3
+    arrays.a_position.data.push(-0.15, 0.6);    // Vertex 1
+    arrays.a_position.data.push(-0.20, 0.4);    // Vertex 2  
+    arrays.a_position.data.push(-0.05, 0.45);   // Vertex 3
 
     arrays.a_color.data.push(1.0, 0.7, 0.8, 1.0);
     arrays.a_color.data.push(1.0, 0.6, 0.8, 1.0);
@@ -135,9 +143,9 @@ function emojiCat() {
     vertexOffset += 3;
 
     // Orejita 2 (derecha)
-    arrays.a_position.data.push(0.17, 0.7);   // Vértice 1
-    arrays.a_position.data.push(0.25, 0.3); // Vértice 2  
-    arrays.a_position.data.push(-0.1, 0.3);  // Vértice 3
+    arrays.a_position.data.push(0.17, 0.7);     // Vertex 1
+    arrays.a_position.data.push(0.25, 0.3);     // Vertex 2  
+    arrays.a_position.data.push(-0.1, 0.3);     // Vertex 3
 
     arrays.a_color.data.push(0.9, 0.7, 0.15, 1.0);
     arrays.a_color.data.push(1.0, 0.8, 0.2, 1.0);
@@ -151,9 +159,9 @@ function emojiCat() {
     vertexOffset += 3;
 
     // Orejita 2 (derecha adentro)
-    arrays.a_position.data.push(0.15, 0.6);   // Vértice 1
-    arrays.a_position.data.push(0.20, 0.4); // Vértice 2  
-    arrays.a_position.data.push(0.05, 0.45);  // Vértice 3
+    arrays.a_position.data.push(0.15, 0.6);     // Vertex 1
+    arrays.a_position.data.push(0.20, 0.4);     // Vertex 2  
+    arrays.a_position.data.push(0.05, 0.45);    // Vertex 3
 
     arrays.a_color.data.push(1.0, 0.7, 0.8, 1.0);
     arrays.a_color.data.push(1.0, 0.6, 0.8, 1.0);
@@ -167,11 +175,11 @@ function emojiCat() {
     vertexOffset += 3;
 
     // Boquita
-    arrays.a_position.data.push(-0.2, -0.25);
-    arrays.a_position.data.push(-0.1, -0.3);
-    arrays.a_position.data.push(0.0, -0.32);
-    arrays.a_position.data.push(0.1, -0.3);
-    arrays.a_position.data.push(0.2, -0.25);
+    arrays.a_position.data.push(-0.2, -0.25);   // Vertex 1
+    arrays.a_position.data.push(-0.1, -0.3);    // Vertex 2
+    arrays.a_position.data.push(0.0, -0.32);    // Vertex 3
+    arrays.a_position.data.push(0.1, -0.3);     // Vertex 4
+    arrays.a_position.data.push(0.2, -0.25);    // Vertex 5
 
     arrays.a_color.data.push(0, 0, 0, 1.0);
     arrays.a_color.data.push(0, 0, 0, 1.0);
@@ -180,14 +188,50 @@ function emojiCat() {
     arrays.a_color.data.push(0, 0, 0, 1.0);
 
     arrays.indices.data.push(
-        vertexOffset, vertexOffset + 1, vertexOffset + 2,  // Triángulo 1
-        vertexOffset + 1, vertexOffset + 2, vertexOffset + 3,  // Triángulo 2
-        vertexOffset + 2, vertexOffset + 3, vertexOffset + 4   // Triángulo 3
+        vertexOffset, vertexOffset + 1, vertexOffset + 2,  // Triangle 1
+        vertexOffset + 1, vertexOffset + 2, vertexOffset + 3,  // Triangle 2
+        vertexOffset + 2, vertexOffset + 3, vertexOffset + 4   // Triangle 3
     );
 
     vertexOffset += 5;
 
     return arrays;
-}
+};
 
-export {emojiCat}
+// Create a pivot
+function pivot(color) {
+    let arrays = {
+        a_position: { numComponents: 2, data: [] },
+        a_color: { numComponents: 4, data: [] },
+        indices: { numComponents: 3, data: [] }
+    };
+
+    let sides = 7;
+
+    // Initialize the center vertex, at the origin and with yellow color
+    arrays.a_position.data.push(0);
+    arrays.a_position.data.push(0);
+    arrays.a_color.data.push(...color);
+
+    let angleStep = 2 * Math.PI / sides;
+
+    // Loop over the sides to create the rest of the vertices
+    for (let s=0; s<sides; s++) {
+        let angle = angleStep * s;
+        // Generate the coordinates of the vertex
+        let x = Math.cos(angle) / 30;
+        let y = Math.sin(angle) / 30;
+        arrays.a_position.data.push(x);
+        arrays.a_position.data.push(y);
+        // Generate a yellow color for the vertex
+        arrays.a_color.data.push(...color);
+
+        // Define the triangles, in counter clockwise order
+        arrays.indices.data.push(0);
+        arrays.indices.data.push(s + 1);
+        arrays.indices.data.push(((s + 2) <= sides) ? (s + 2) : 1);
+    }
+    return arrays;
+};
+
+export {emojiCat, pivot}

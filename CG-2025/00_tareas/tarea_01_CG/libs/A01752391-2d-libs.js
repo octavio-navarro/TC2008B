@@ -2,8 +2,9 @@
  * Functions for 2D transformations
  *
  * Miranda Urban Solano A01752391
- * 2024-11-04
- */
+ * noviembre 2025
+ * 
+*/
 
 class V2 {
     static create(px, py) {
@@ -13,7 +14,6 @@ class V2 {
         return v;
     }
 }
-
 
 class M3 {
     static identity() {

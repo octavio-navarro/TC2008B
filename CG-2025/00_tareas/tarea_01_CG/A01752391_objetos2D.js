@@ -8,25 +8,27 @@
 'use strict';
 
 import * as twgl from "twgl-base.js";
-import {emojiCat} from "./libs/A01752391-shapes";
+import {emojiCat, pivot} from "./libs/A01752391-shapes.js";
 import { M3 } from './libs/A01752391-2d-libs.js';
 import GUI from 'lil-gui';
 
-
-/*// Vertex Shader as a string
+// Vertex shader for transformations
 const vsGLSL = `#version 300 es
-in vec4 a_position;
+in vec2 a_position;
 in vec4 a_color;
+
+uniform mat3 u_transforms;
 
 out vec4 v_color;
 
 void main() {
-    gl_Position = a_position;
+    vec3 transformed = u_transforms * vec3(a_position, 1.0);
+    gl_Position = vec4(transformed.xy, 0.0, 1.0);
     v_color = a_color;
 }
-`;*/
+`;
 
-// Fragment Shader as a string
+// Fragment shader
 const fsGLSL = `#version 300 es
 precision highp float;
 
@@ -39,42 +41,12 @@ void main() {
 }
 `;
 
-/*function main() {
-    const canvas = document.querySelector('canvas');
-    const gl = canvas.getContext('webgl2');
-    
-
-    const programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
-
-    const arrays = emojiCat(); // Dibujar emoji
-
-    const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
-
-    const vao = twgl.createVAOFromBufferInfo(gl, programInfo, bufferInfo);
-    console.log(vao);
-
-    gl.bindVertexArray(vao);
-
-    gl.useProgram(programInfo.program);
-
-    twgl.drawBufferInfo(gl, bufferInfo);
-}*/
-
-
-// Define the shader code, using GLSL 3.00
-
-const vsGLSL = `#version 300 es
-in vec2 a_position;
-in vec4 a_color;
-
-uniform vec2 u_resolution;
-uniform mat3 u_transforms;
-
-out vec4 v_color;
-`;
 
 // Structure for the global data of all objects
 // This data will be modified by the UI and used by the renderer
+
+let color_pivot = [0,0.7,0.9,1];
+
 const objects = {
     model: {
         transforms: {
@@ -92,9 +64,13 @@ const objects = {
                 x: 1,
                 y: 1,
                 z: 1,
+            },
+            pivot: {
+                x: 0,
+                y: 0,
+                color:  color_pivot,//[1.0, 0.0, 0.0, 1.0],
             }
         },
-        color: [1, 0.3, 0, 1],
     }
 }
 
@@ -109,49 +85,61 @@ function main() {
 
     const programInfo = twgl.createProgramInfo(gl, [vsGLSL, fsGLSL]);
 
-    const arrays = emojiCat();
-
-    const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
-
+    // For building the emoji
+    const arrays_cat = emojiCat();
+    const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays_cat);
     const vao = twgl.createVAOFromBufferInfo(gl, programInfo, bufferInfo);
 
-    drawScene(gl, vao, programInfo, bufferInfo);
+    // For building the pivot
+    const arrays_pivot = pivot(objects.model.transforms.pivot.color)
+    const bufferInfo_pivot = twgl.createBufferInfoFromArrays(gl, arrays_pivot);
+    const vao_pivot = twgl.createVAOFromBufferInfo(gl, programInfo, bufferInfo_pivot);
+
+    drawScene(gl, vao, programInfo, bufferInfo, vao_pivot, bufferInfo_pivot);
+    //drawScene(gl, vao, programInfo, bufferInfo);
 }
 
 // Function to do the actual display of the objects
-function drawScene(gl, vao, programInfo, bufferInfo) {
+function drawScene(gl, vao, programInfo, bufferInfo, vao_pivot, bufferInfo_pivot) {
 
     let translate = [objects.model.transforms.t.x, objects.model.transforms.t.y];
     let angle_radians = objects.model.transforms.rr.z;
     let scale = [objects.model.transforms.s.x, objects.model.transforms.s.y];
+    let pivotPoint = [objects.model.transforms.pivot.x, objects.model.transforms.pivot.y];
 
-    // Create transform matrices
+    // Create transform matrices for the cat
     const scaMat = M3.scale(scale);
     const rotMat = M3.rotation(angle_radians);
     const traMat = M3.translation(translate);
 
-    // Create a composite matrix
-    let transforms = M3.identity();
-    transforms = M3.multiply(scaMat, transforms);
-    transforms = M3.multiply(rotMat, transforms);
-    transforms = M3.multiply(traMat, transforms);
+    // Create pivot's matrices
+    const pivotOrigin = M3.translation([-pivotPoint[0], -pivotPoint[1]]);
+    const pivotBack = M3.translation(pivotPoint);
 
-    let uniforms =
-    {
-        u_resolution: [gl.canvas.width, gl.canvas.height],
-        u_transforms: transforms,
-        u_color: objects.model.color,
-    }
+    // Create a composite matrix for the cat
+    let catTransforms = M3.identity();
+    catTransforms = M3.multiply(traMat, catTransforms);      // Translation
+    catTransforms = M3.multiply(pivotBack, catTransforms);   // Back to pivot
+    catTransforms = M3.multiply(rotMat, catTransforms);      // Rotation
+    catTransforms = M3.multiply(scaMat, catTransforms);      // Scale
+    catTransforms = M3.multiply(pivotOrigin, catTransforms); // To pivot
+
+    // Create transform matrix for the pivot (solo translación para mostrar posición)
+    let pivotTransforms = M3.translation(pivotPoint);
 
     gl.useProgram(programInfo.program);
 
-    twgl.setUniforms(programInfo, uniforms);
-
+    // Draw the cat with its transformations
+    twgl.setUniforms(programInfo, { u_transforms: catTransforms });
     gl.bindVertexArray(vao);
-
     twgl.drawBufferInfo(gl, bufferInfo);
 
-    requestAnimationFrame(() => drawScene(gl, vao, programInfo, bufferInfo));
+    // Draw the pivot with its own transformations (solo posición)
+    twgl.setUniforms(programInfo, { u_transforms: pivotTransforms });
+    gl.bindVertexArray(vao_pivot);
+    twgl.drawBufferInfo(gl, bufferInfo_pivot);
+
+    requestAnimationFrame(() => drawScene(gl, vao, programInfo, bufferInfo, vao_pivot, bufferInfo_pivot));
 }
 
 // Recibe un objeto y las propiedades de este (x,y,z), y las modifica
@@ -160,8 +148,8 @@ function setupUI(gl)
     const gui = new GUI();
 
     const traFolder = gui.addFolder('Translation');
-    traFolder.add(objects.model.transforms.t, 'x', 0, gl.canvas.width);
-    traFolder.add(objects.model.transforms.t, 'y', 0, gl.canvas.height);
+    traFolder.add(objects.model.transforms.t, 'x', -1, 1);
+    traFolder.add(objects.model.transforms.t, 'y', -1, 1);
 
     const rotFolder = gui.addFolder('Rotation');
     rotFolder.add(objects.model.transforms.rr, 'z', 0, Math.PI * 2);
@@ -170,7 +158,10 @@ function setupUI(gl)
     scaFolder.add(objects.model.transforms.s, 'x', -5, 5);
     scaFolder.add(objects.model.transforms.s, 'y', -5, 5);
 
-    gui.addColor(objects.model, 'color');
+    const pivotFolder = gui.addFolder('Pivot');
+    pivotFolder.add(objects.model.transforms.pivot, 'x', -1, 1);
+    pivotFolder.add(objects.model.transforms.pivot, 'y', -1, 1);
+    // pivotFolder.addColor(objects.model.transforms.pivot, 'color')
 }
 
 main()
