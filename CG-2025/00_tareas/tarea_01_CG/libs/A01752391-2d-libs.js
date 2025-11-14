@@ -15,17 +15,16 @@ class V2 {
     }
 }
 
+
 class M3 {
     static identity() {
         let m = new Float32Array(9);
         m[0] = 1;
         m[1] = 0;
         m[2] = 0;
-
         m[3] = 0;
         m[4] = 1;
         m[5] = 0;
-
         m[6] = 0;
         m[7] = 0;
         m[8] = 1;
@@ -91,23 +90,22 @@ a20 a21 a22            b20 b21 b22
         const mb21 = mb[2 * 3 + 1];
         const mb22 = mb[2 * 3 + 2];
 
-        return [
+        return [ 
         // Fila 1
-        ma00 * mb00 + ma01 * mb10 + ma02 * mb20, // Columna 1
-        ma00 * mb01 + ma01 * mb11 + ma02 * mb21, // Columna 2
-        ma00 * mb02 + ma01 * mb12 + ma02 * mb22, // COlumna 3
+        mb00 * ma00 + mb01 * ma10 + mb02 * ma20, // Columna 1
+        mb00 * ma01 + mb01 * ma11 + mb02 * ma21, // Columna 2
+        mb00 * ma02 + mb01 * ma12 + mb02 * ma22, // Columna 3
         
         // Fila 2
-        ma10 * mb00 + ma11 * mb10 + ma12 * mb20, // Columna 1
-        ma10 * mb01 + ma11 * mb11 + ma12 * mb21, // Colmna 2
-        ma10 * mb02 + ma11 * mb12 + ma12 * mb22, // Columna 3
+        mb10 * ma00 + mb11 * ma10 + mb12 * ma20, // Columna 1
+        mb10 * ma01 + mb11 * ma11 + mb12 * ma21, // Columna 2
+        mb10 * ma02 + mb11 * ma12 + mb12 * ma22, // Columna 3
         
         // Fila 3
-        ma20 * mb00 + ma21 * mb10 + ma22 * mb20, // Columna 1
-        ma20 * mb01 + ma21 * mb11 + ma22 * mb21, // Colmna 2
-        ma20 * mb02 + ma21 * mb12 + ma22 * mb22 // Columna 3
-
-    ];
+        mb20 * ma00 + mb21 * ma10 + mb22 * ma20, // Columna 1
+        mb20 * ma01 + mb21 * ma11 + mb22 * ma21, // Columna 2
+        mb20 * ma02 + mb21 * ma12 + mb22 * ma22, // Columna 3
+        ];
     }
 
 }
