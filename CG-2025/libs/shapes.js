@@ -34,7 +34,7 @@ function shapeF() {
                 0, 1, 2,
                 2, 3, 0,
                 3, 4, 5,
-                5, 6, 3, 
+                5, 6, 3,
                 7, 8, 9,
                 9, 10, 7,
             ]
@@ -292,5 +292,143 @@ function cubeVertexColors(size) {
     return arrays;
 }
 
+// Create the data for a cube with vertex coordinates
+function cubeTextured(size) {
+    let arrays = {
+        a_position: {
+            numComponents: 3,
+            data: [
+                // Front Face
+                -1.0, -1.0,  1.0,
+                1.0, -1.0,  1.0,
+                1.0,  1.0,  1.0,
+                -1.0,  1.0,  1.0,
 
-export { shapeF, diamond, cubeFaceColors, cubeVertexColors, car2D };
+                // Back face
+                -1.0, -1.0, -1.0,
+                -1.0,  1.0, -1.0,
+                1.0,  1.0, -1.0,
+                1.0, -1.0, -1.0,
+
+                // Top face
+                -1.0,  1.0, -1.0,
+                -1.0,  1.0,  1.0,
+                1.0,  1.0,  1.0,
+                1.0,  1.0, -1.0,
+
+                // Bottom face
+                -1.0, -1.0, -1.0,
+                1.0, -1.0, -1.0,
+                1.0, -1.0,  1.0,
+                -1.0, -1.0,  1.0,
+
+                // Right face
+                1.0, -1.0, -1.0,
+                1.0,  1.0, -1.0,
+                1.0,  1.0,  1.0,
+                1.0, -1.0,  1.0,
+
+                // Left face
+                -1.0, -1.0, -1.0,
+                -1.0, -1.0,  1.0,
+                -1.0,  1.0,  1.0,
+                -1.0,  1.0, -1.0
+            ].map(e => size * e)
+        },
+        a_normal: {
+            numComponents: 3,
+            data: [
+                // Front Face
+                0, 0, 1,
+                0, 0, 1,
+                0, 0, 1,
+                0, 0, 1,
+
+                // Back face
+                0, 0, -1,
+                0, 0, -1,
+                0, 0, -1,
+                0, 0, -1,
+
+                // Top face
+                0, 1, 0,
+                0, 1, 0,
+                0, 1, 0,
+                0, 1, 0,
+
+                // Bottom face
+                0, -1, 0,
+                0, -1, 0,
+                0, -1, 0,
+                0, -1, 0,
+
+                // Right face
+                1, 0, 0,
+                1, 0, 0,
+                1, 0, 0,
+                1, 0, 0,
+
+                // Left face
+                -1, 0, 0,
+                -1, 0, 0,
+                -1, 0, 0,
+                -1, 0, 0,
+            ]
+        },
+        a_texCoord: {
+            numComponents: 2,
+            data: [
+                // Front Face
+                0.0, 0.0,
+                1.0, 0.0,
+                1.0,  1.0,
+                0.0, 1.0,
+
+                // Back face
+                1.0, 0.0,
+                1.0, 1.0,
+                0.0, 1.0,
+                0.0, 0.0,
+
+                // Top face
+                0.0, 1.0,
+                0.0, 0.0,
+                1.0, 0.0,
+                1.0, 1.0,
+
+                // Bottom face
+                0.0, 0.0,
+                1.0, 0.0,
+                1.0, 1.0,
+                0.0, 1.0,
+
+                // Right face
+                0.0, 1.0,
+                1.0, 1.0,
+                1.0, 0.0,
+                0.0, 0.0,
+
+                // Left face
+                0.0, 0.0,
+                1.0, 0.0,
+                1.0, 1.0,
+                0.0, 1.0,
+            ]
+        },
+        indices: {
+            numComponents: 3,
+            data: [
+                0, 1, 2,      0, 2, 3,    // Front face
+                4, 5, 6,      4, 6, 7,    // Back face
+                8, 9, 10,     8, 10, 11,  // Top face
+                12, 13, 14,   12, 14, 15, // Bottom face
+                16, 17, 18,   16, 18, 19, // Right face
+                20, 21, 22,   20, 22, 23  // Left face
+            ]
+        }
+    };
+
+    return arrays;
+}
+
+export { shapeF, diamond, cubeFaceColors, cubeVertexColors, cubeTextured, car2D };
