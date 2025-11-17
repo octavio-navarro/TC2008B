@@ -39,6 +39,9 @@ class Object3D {
             y: scale[1],
             z: scale[2],
         };
+        // This variabe may be used to controll all the scale factors at once
+        this.s_all = scale[0];
+
         this.matrix = M4.identity();
         // Materials and colors
         this.color = color;
