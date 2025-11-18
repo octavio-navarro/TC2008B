@@ -31,24 +31,33 @@ class M3 {
     }
 
     static scale(vs) {
+        let sx = vs[0];
+        let sy = vs[1];
         return [
-             1,  0,  0,
-             0,  1,  0,
-             0,  0,  1 ];
+             sx,  0,  0,
+             0,  sy,  0,
+             0,  0,   1
+        ];
     }
 
     static translation(vt) {
-       return [
-             1,  0,  0,
-             0,  1,  0,
-             0,  0,  1 ];
+        let tx = vt[0];
+        let ty = vt[1];
+        return [
+            1,  0,  tx,
+            0,  1,  ty,
+            0,  0,  1
+        ];
     }
 
     static rotation(angleRadians) {
+        const c = Math.cos(angleRadians);
+        const s = Math.sin(angleRadians);
         return [
-             1,  0,  0,
-             0,  1,  0,
-             0,  0,  1 ];
+            c,  -s, 0,
+            s,  c,  0,
+            0,  0,  1
+        ];
     }
 
 /*
@@ -81,9 +90,22 @@ a20 a21 a22            b20 b21 b22
         const mb22 = mb[2 * 3 + 2];
 
         return [
-             1,  0,  0,
-             0,  1,  0,
-             0,  0,  1 ];
+        // Fila 1
+        ma00 * mb00 + ma01 * mb10 + ma02 * mb20, // Columna 1
+        ma00 * mb01 + ma01 * mb11 + ma02 * mb21, // Columna 2
+        ma00 * mb02 + ma01 * mb12 + ma02 * mb22, // COlumna 3
+        
+        // Fila 2
+        ma10 * mb00 + ma11 * mb10 + ma12 * mb20, // Columna 1
+        ma10 * mb01 + ma11 * mb11 + ma12 * mb21, // Colmna 2
+        ma10 * mb02 + ma11 * mb12 + ma12 * mb22, // Columna 3
+        
+        // Fila 3
+        ma20 * mb00 + ma21 * mb10 + ma22 * mb20, // Columna 1
+        ma20 * mb01 + ma21 * mb11 + ma22 * mb21, // Colmna 2
+        ma20 * mb02 + ma21 * mb12 + ma22 * mb22 // Columna 3
+
+    ];
     }
 
 }

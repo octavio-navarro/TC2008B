@@ -9,15 +9,18 @@ from mesa.visualization import (
 
 from mesa.visualization.components import AgentPortrayalStyle
 
+# Indica cómo se mostrarán los agentes
 def random_portrayal(agent):
     if agent is None:
         return
 
+    # Valores default
     portrayal = AgentPortrayalStyle(
         size=50,
         marker="o",
     )
 
+    # Condiciones especiales (para cada agente)
     if isinstance(agent, RandomAgent):
         portrayal.color = "red"
     elif isinstance(agent, ObstacleAgent):
