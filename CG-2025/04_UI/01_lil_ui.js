@@ -56,6 +56,7 @@ void main() {
 
 // Structure for the global data of all objects
 // This data will be modified by the UI and used by the renderer
+// Información necesaria para 
 const objects = {
     model: {
         transforms: {
@@ -135,6 +136,7 @@ function drawScene(gl, vao, programInfo, bufferInfo) {
     requestAnimationFrame(() => drawScene(gl, vao, programInfo, bufferInfo));
 }
 
+// Recibe un objeto y las propiedades de este (x,y,z), y las modifica
 function setupUI(gl)
 {
     const gui = new GUI();

@@ -29,13 +29,14 @@ class V3 {
 
     static normalize(v, dest) {
         // v = vector recibido 
-        // desr = donde voy a poner el resultado
+        // dest = donde voy a poner el resultado
         dest = dest || new Float32Array(3); // Crear un nuevo array si este no está definido
         
         let len = V3.length(v); // Obtener la magnitud
 
         // Verificar que si el vector está relleno de ceros
         if (len != 0){
+            // Calcular matriz normalizada
             dest[0] = v[0] / len;
             dest[1] = v[1] / len;
             dest[2] = v[2] / len;
@@ -54,15 +55,52 @@ class V3 {
     }
 
     static cross(u, v, dest) {
-        return [];
+        // dest = donde voy a poner el resultado
+        dest = dest || new Float32Array(3); // Crear un nuevo array si este no está definido
+
+        // Calcular producto cruz
+        dest[0] = u[1] * v[2]- u[2] * v[1];
+        dest[1] = u[2] * v[0]- u[0] * v[2];
+        dest[2] = u[0] * v[1]- u[1] * v[0];
+
+        return dest;
     }
 
     static add(u, v, dest) {
-        return [];
+        // dest = donde voy a poner el resultado
+        dest = dest || new Float32Array(3); // Crear un nuevo array si este no está definido
+
+        // Calcular suma
+        dest[0] = u[0] + v[0];
+        dest[1] = u[1] + v[1];
+        dest[2] = u[2] + v[2];
+
+        return dest;
     }
 
     static subtract(u, v, dest) {
-        return [];
+        // dest = donde voy a poner el resultado
+        dest = dest || new Float32Array(3); // Crear un nuevo array si este no está definido
+
+        // Calcular resta
+        dest[0] = u[0] - v[0];
+        dest[1] = u[1] - v[1];
+        dest[2] = u[2] - v[2];
+
+        return dest;
+    }
+
+    // Multiply a vector by a scalar
+    static scale(u, s, dest){
+        // dest = donde voy a poner el resultado
+        dest = dest || new Float32Array(3); // Crear un nuevo array si este no está definido
+
+        // Calcular multiplicación por escalar
+        dest[0] = u[0] * s;
+        dest[1] = u[1] * s;
+        dest[2] = u[2] * s;
+
+        return dest;
     }
 }
 
@@ -115,10 +153,31 @@ class M4 {
 
         // The matrices are oriented transposed,
         // so the multiplication must be adjusted accordingly
-        return [ 1,  0,  0,  0,
-                 0,  1,  0,  0,
-                 0,  0,  1,  0,
-                 0,  0,  0,  1];
+        return [ 
+        // Fila 1
+        b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30, // Columna 1
+        b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31, // Columna 2
+        b00 * a02 + b01 * a12 + b02 * a22 + b03 * a32, // Columna 3
+        b00 * a03 + b01 * a13 + b02 * a23 + b03 * a33, // Columna 4
+        
+        // Fila 2
+        b10 * a00 + b11 * a10 + b12 * a20 + b13 * a30, // Columna 1
+        b10 * a01 + b11 * a11 + b12 * a21 + b13 * a31, // Columna 2
+        b10 * a02 + b11 * a12 + b12 * a22 + b13 * a32, // Columna 3
+        b10 * a03 + b11 * a13 + b12 * a23 + b13 * a33, // Columna 4
+        
+        // Fila 3
+        b20 * a00 + b21 * a10 + b22 * a20 + b23 * a30, // Columna 1
+        b20 * a01 + b21 * a11 + b22 * a21 + b23 * a31, // Columna 2
+        b20 * a02 + b21 * a12 + b22 * a22 + b23 * a32, // Columna 3
+        b20 * a03 + b21 * a13 + b22 * a23 + b23 * a33, // Columna 4
+
+        // Fila 4
+        b30 * a00 + b31 * a10 + b32 * a20 + b33 * a30, // Columna 1
+        b30 * a01 + b31 * a11 + b32 * a21 + b33 * a31, // Columna 2
+        b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32, // Columna 3
+        b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33, // Columna 4
+        ];
     }
 
     static identity() {
@@ -130,38 +189,55 @@ class M4 {
     }
 
     static translation(v) {
-        return [ 1,  0,  0,  0,
-                 0,  1,  0,  0,
-                 0,  0,  1,  0,
-                 0,  0,  0,  1];
+        let tx = v[0];
+        let ty = v[1];
+        let tz = v[2];
+
+        return [ 1,    0,   0,  0,
+                 0,    1,   0,  0,
+                 0,    0,   1,  0,
+                 tx,  ty,  tz,  1];
     }
 
     static rotationX(angleRadians) {
-        return [ 1,  0,  0,  0,
-                 0,  1,  0,  0,
-                 0,  0,  1,  0,
-                 0,  0,  0,  1];
+        const c = Math.cos(angleRadians);
+        const s = Math.sin(angleRadians);
+
+        return [ 1,   0,  0,  0,
+                 0,   c,  s,  0,
+                 0,  -s,  c,  0,
+                 0,   0,  0,  1];
     }
 
     static rotationY(angleRadians) {
-        return [ 1,  0,  0,  0,
-                 0,  1,  0,  0,
-                 0,  0,  1,  0,
-                 0,  0,  0,  1];
+        const c = Math.cos(angleRadians);
+        const s = Math.sin(angleRadians);
+        
+        return [ c,  0,  -s,  0,
+                 0,  1,   0,  0,
+                 s,  0,   c,  0,
+                 0,  0,   0,  1];
     }
 
     static rotationZ(angleRadians) {
-        return [ 1,  0,  0,  0,
-                 0,  1,  0,  0,
-                 0,  0,  1,  0,
-                 0,  0,  0,  1];
+        const c = Math.cos(angleRadians);
+        const s = Math.sin(angleRadians);
+        
+        return [ c,  s,  0,   0,
+                 -s, c,  0,   0,
+                 0,  0,  1,   0,
+                 0,  0,  0,   1];
     }
 
     static scale(v) {
-        return [ 1,  0,  0,  0,
-                 0,  1,  0,  0,
-                 0,  0,  1,  0,
-                 0,  0,  0,  1];
+        let sx = v[0];
+        let sy = v[1];
+        let sz = v[2];
+
+        return [ sx,  0,   0,  0,
+                 0,  sy,   0,  0,
+                 0,   0,  sz,  0,
+                 0,   0,   0,  1];
     }
 
     /**

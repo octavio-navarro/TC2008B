@@ -1,9 +1,10 @@
 /*
  * Functions for 2D transformations
  *
- * Gilberto Echeverria
- * 2024-11-04
- */
+ * Miranda Urban Solano A01752391
+ * noviembre 2025
+ * 
+*/
 
 class V2 {
     static create(px, py) {
@@ -95,12 +96,12 @@ a20 a21 a22            b20 b21 b22
         mb00 * ma01 + mb01 * ma11 + mb02 * ma21, // Columna 2
         mb00 * ma02 + mb01 * ma12 + mb02 * ma22, // Columna 3
         
-        // Filma 2
+        // Fila 2
         mb10 * ma00 + mb11 * ma10 + mb12 * ma20, // Columna 1
         mb10 * ma01 + mb11 * ma11 + mb12 * ma21, // Columna 2
         mb10 * ma02 + mb11 * ma12 + mb12 * ma22, // Columna 3
         
-        // Filma 3
+        // Fila 3
         mb20 * ma00 + mb21 * ma10 + mb22 * ma20, // Columna 1
         mb20 * ma01 + mb21 * ma11 + mb22 * ma21, // Columna 2
         mb20 * ma02 + mb21 * ma12 + mb22 * ma22, // Columna 3
