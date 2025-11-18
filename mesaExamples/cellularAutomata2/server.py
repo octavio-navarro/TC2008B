@@ -8,7 +8,7 @@ from mesa.visualization.components import AgentPortrayalStyle
 
 def agent_portrayal(agent):
     return AgentPortrayalStyle(
-        color="white" if agent.state == 0 else "black",
+        color="white" if agent.state == 0 else "green",
         marker="s",
         size=30,
     )

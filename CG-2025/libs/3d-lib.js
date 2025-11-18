@@ -15,20 +15,42 @@ const Z = 2;
 // Vector 3
 class V3 {
     static create(x, y, z) {
-        const v = new Float32Array(3);
+        const v = new Float32Array(3); // Estandarizar el tamaño del float
+        v[0] = x;
+        v[1] = y;
+        v[2] = z;
         return v;
     }
 
     static length(v) {
-        return 0;
+        let len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        return len;
     }
 
     static normalize(v, dest) {
-        return [];
+        // v = vector recibido 
+        // desr = donde voy a poner el resultado
+        dest = dest || new Float32Array(3); // Crear un nuevo array si este no está definido
+        
+        let len = V3.length(v); // Obtener la magnitud
+
+        // Verificar que si el vector está relleno de ceros
+        if (len != 0){
+            dest[0] = v[0] / len;
+            dest[1] = v[1] / len;
+            dest[2] = v[2] / len;
+        } else {
+            dest[0] = 0;
+            dest[1] = 0;
+            dest[2] = 0;
+        }
+
+        return dest;
     }
 
     static dot(u, v) {
-        return 0;
+        let product = u[0]*v[0] + u[1]*v[1] + u[2]*v[2];
+        return product;
     }
 
     static cross(u, v, dest) {

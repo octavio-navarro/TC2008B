@@ -12,6 +12,7 @@ from mesa.visualization.user_param import (
 
 from mesa.visualization.components import AgentPortrayalStyle
 
+# Variable para colorear los agentes de acuerdo a su estado
 COLORS = {"Fine": "#00AA00", "On Fire": "#880000", "Burned Out": "#000000"}
 
 # Since it is a matplotlib visualization, you can use the markers in https://matplotlib.org/stable/api/markers_api.html
@@ -38,6 +39,7 @@ space_component = make_space_component(
     post_process=post_process_space,
 )
 
+# Se vinculan los mismos colores de los agentes en la visualización del plot
 lineplot_component = make_plot_component(
     COLORS,
     post_process=post_process_lines,

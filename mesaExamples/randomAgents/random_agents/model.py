@@ -21,6 +21,7 @@ class RandomModel(Model):
         self.grid = OrthogonalMooreGrid([width, height], torus=False)
 
         # Identify the coordinates of the border of the grid
+        # Identificar coordenadas en (x,y) que coinciden con las características del borde
         border = [(x,y)
                   for y in range(height)
                   for x in range(width)
@@ -32,13 +33,13 @@ class RandomModel(Model):
                 ObstacleAgent(self, cell=cell)
 
         RandomAgent.create_agents(
-            self,
-            self.num_agents,
-            cell=self.random.choices(self.grid.empties.cells, k=self.num_agents)
+            self, # Referencia al modelo
+            self.num_agents, # Cantidad random de agentes a crear en ese modelo
+            cell=self.random.choices(self.grid.empties.cells, k=self.num_agents) # Elige aleatoriamente un agente en una celda vacía
         )
 
         self.running = True
 
     def step(self):
         '''Advance the model by one step.'''
-        self.agents.shuffle_do("step")
+        self.agents.shuffle_do("step") # Hace de manera aleatoria el step de cada agente (más a doc a una simulación real)

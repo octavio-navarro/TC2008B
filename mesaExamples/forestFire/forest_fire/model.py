@@ -16,6 +16,8 @@ class ForestFire(mesa.Model):
         super().__init__(seed=seed)
 
         self.grid = OrthogonalMooreGrid((width, height), capacity=1, random=self.random)
+
+        # Se usa un diccionario para guardar los estados de la simulación (métricas de desempeño)
         self.datacollector = mesa.DataCollector(
             {
                 "Fine": lambda m: self.count_type(m, "Fine"),
@@ -38,7 +40,7 @@ class ForestFire(mesa.Model):
 
     def step(self):
         """Advance the model by one step."""
-        self.agents.shuffle_do("step")
+        self.agents.shuffle_do("step") # Los steps son en celdas aleatorias
         # collect data
         self.datacollector.collect(self)
 
