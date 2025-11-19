@@ -1,3 +1,4 @@
+import mesa
 from mesa import Model
 from mesa.discrete_space import OrthogonalMooreGrid
 
@@ -10,17 +11,25 @@ class RandomModel(Model):
         num_agents: Number of roombas in the simulation
         height, width: The size of the grid to model
     """
-    def __init__(self, num_agents=10, width=8, height=8, seed=42):
+    def __init__(self, num_agents=4, width=8, height=8, seed=42):
 
         super().__init__(seed=seed)
         self.num_agents = num_agents
         self.seed = seed
         self.width = width
         self.height = height
-        self.num_dirt = 20
+        self.num_dirt = 40
         self.num_obstacles = 8
 
         self.grid = OrthogonalMooreGrid([width, height], torus=False)
+
+        # Se usa un diccionario para guardar los estados de la simulación (métricas de desempeño)
+        self.datacollector = mesa.DataCollector(
+            {
+                "Cleanliness": lambda m: self.count_type(m, "Dirt"),
+                "Roombas": lambda m: self.count_type(m, "Roombas"),
+            }
+        )
 
         ObstacleAgent.create_agents(
             self, # Referencia al modelo
@@ -54,3 +63,10 @@ class RandomModel(Model):
     def step(self):
         '''Advance the model by one step.'''
         self.agents.shuffle_do("step") # Hace de manera aleatoria el step de cada agente (más a doc a una simulación real)
+        self.datacollector.collect(self) # Collect data
+
+    @staticmethod
+    def count_type(model, tree_condition):
+        """Helper method to count trees in a given condition in a given model."""
+        return len(model.agents.select(lambda x: x.condition == tree_condition))
+
