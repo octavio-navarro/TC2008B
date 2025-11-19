@@ -119,11 +119,11 @@ function drawScene(gl, vao, programInfo, bufferInfo, vao_pivot, bufferInfo_pivot
     // Create a composite matrix for the cat
     // The order is important to transform correctly the cat according to the pivot position
     let catTransforms = M3.identity();
-    catTransforms = M3.multiply(traMat, catTransforms);      // Translation
-    catTransforms = M3.multiply(pivotBack, catTransforms);   // Back to pivot
-    catTransforms = M3.multiply(rotMat, catTransforms);      // Rotation
-    catTransforms = M3.multiply(pivotOrigin, catTransforms); // To pivot
-    catTransforms = M3.multiply(scaMat, catTransforms);      // Scale
+    catTransforms = M3.multiply(traMat, catTransforms);      // 1. Translation
+    catTransforms = M3.multiply(pivotOrigin, catTransforms); // 2. Mover to pivot
+    catTransforms = M3.multiply(rotMat, catTransforms);      // 3. Rotaion
+    catTransforms = M3.multiply(pivotBack, catTransforms);   // 4. Mover to pivot
+    catTransforms = M3.multiply(scaMat, catTransforms);      // 5. Scale
 
     // Create transform matrix for the pivot (solo translación para mostrar posición)
     let pivotTransforms = M3.translation(pivotPoint);

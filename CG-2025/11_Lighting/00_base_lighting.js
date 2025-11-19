@@ -3,6 +3,7 @@
  *
  * Gilberto Echeverria
  * 2025-11-13
+ * 
  */
 
 
@@ -131,10 +132,20 @@ function drawObject(gl, programInfo, object, viewProjectionMatrix, fract) {
     const normalMat = M4.transpose(M4.inverse(object.matrix));
 
     // Model uniforms
+    /* 
+     * Información de los objetos
+     */
     let objectUniforms = {
+        // Matrices de transformación (del objeto, sin contar la cámara)
+        u_world: transforms, // Transformaciones
+        u_worldInverseTransform: normalMat, // Si se mueve el objeto, mover el vector normal (inversa de lo que le pasa al objeto)
+        u_worldViewProjection: wvpMat, // Combinación de las matrices del objeto, de la cámara, y de la proyección
 
-
-
+        // Propiedades del material del objeto
+        u_ambientColor: object.color,
+        u_diffuseColor: object.color,
+        u_specularColor: object.color,
+        u_shininess: object.shininess,
     }
     twgl.setUniforms(programInfo, objectUniforms);
 
@@ -164,10 +175,19 @@ function drawScene() {
     gl.useProgram(phongProgramInfo.program);
 
     // Scene uniforms
+    /* 
+     * Información que es la misma para todos los objetos de la escena
+     * -- Posición de la luz
+     * -- Posición de la cámara
+     */
     let globalUniforms = {
-
-
-
+        u_viewWorldPosition: scene.camera.posArray, // Objeto escena que referencia a la cámara y tiene su arreglo de posición
+        
+        // Objeto escena que refrerencia a una luz (índice 0 - única existente)
+        u_lightWorldPosition: scene.lights[0].posArray, // Tiene un arreglo de posición
+        u_ambientLight: scene.lights[0].ambient, // Luz ambiental
+        u_diffuseLight: scene.lights[0].diffuse, // Luz difusa
+        u_specularLight: scene.lights[0].specular, // Luz especular
     }
     twgl.setUniforms(phongProgramInfo, globalUniforms);
 
