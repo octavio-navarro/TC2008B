@@ -1,0 +1,52 @@
+*{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body { 
+  margin:0;
+  box-sizing: border-box; 
+
+  display: grid;
+  grid-template-rows: 10vh 1fr;
+  grid-template-columns: 1fr;
+
+  grid-template-areas: 
+    "header"
+    "main";
+  justify-content: center;
+}
+
+#headerContainer{
+  grid-area: header;
+  background-color: turquoise;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#examplesContainer{
+  margin: 1em;
+  display:flex;
+  justify-content: space-around; 
+  flex-wrap: wrap;
+}
+
+.exampleGroup{
+  margin: 0.5em;
+  padding: 1em;
+  max-width: 20vw;
+  border: 1px solid black;
+  border-radius: 20px;
+}
+
+.assignmentGroup{
+  margin: 0.5em;
+  padding: 1em;
+  max-width: 60vw;
+  border: 1px solid black;
+  border-radius: 20px;
+}

@@ -1,0 +1,33 @@
+# Blender 4.5.2 LTS MTL File: 'buildings_2025.blend'
+# www.blender.org
+
+newmtl ColumnsMat
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.355471 0.468587 0.431888
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl RoofMat
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.127011 0.127011 0.127011
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl WindowMat
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /home/gilberto/Programming/WebGL/assets/textures/Building/building_albedo.png
+map_Bump -bm 1.000000 /home/gilberto/Programming/WebGL/assets/textures/Building/building_normals.png
