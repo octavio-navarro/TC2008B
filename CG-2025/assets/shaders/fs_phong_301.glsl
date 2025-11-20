@@ -28,12 +28,17 @@ void main() {
     vec3 surfToViewDirection = normalize(v_surfaceToView);
 
     // CALCULATIONS FOR THE AMBIENT, DIFFUSE and SPECULAR COMPONENTS
-    float diffuse = dot(normal, surfToLigthDirection);
+    float diffuse = max(dot(normal, surfToLigthDirection), 0.0);
+    float specular = 0.0;
+    if (diffuse > 0.0){
+        vec3 reflected = 2.0 * dot(surfToLigthDirection, normal) * normal - surfToViewDirection;
+        specular = pow(max(dot(normal, surfToViewDirection) , 0.0), u_shininess);
+    }
 
     // Compute the three parts of the Phong lighting model
     vec4 ambientColor = u_ambientLight * u_ambientColor;
     vec4 diffuseColor = u_diffuseLight * u_diffuseColor * diffuse;
-    vec4 specularColor = vec4(0, 0, 0, 1);
+    vec4 specularColor = u_specularLight * u_specularColor * specular;
 
     // Use the color of the texture on the object
     outColor = ambientColor + diffuseColor + specularColor;
