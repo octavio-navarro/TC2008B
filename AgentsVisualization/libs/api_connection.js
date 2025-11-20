@@ -1,5 +1,6 @@
 /*
  * Functions to connect to an external API to get the coordinates of agents
+ * Funciones para hacer llamadas al servidor
  *
  * Gilberto Echeverria
  * 2025-11-08
@@ -18,6 +19,7 @@ const agents = [];
 const obstacles = [];
 
 // Define the data object
+/// Datos iniciales para la simulación
 const initData = {
     NAgents: 20,
     width: 28,
@@ -29,6 +31,7 @@ const initData = {
 
 /*
  * Initializes the agents model by sending a POST request to the agent server.
+ * Envía un diccionario para que se inicialize en el servidor
  */
 async function initAgentsModel() {
     try {
@@ -54,6 +57,9 @@ async function initAgentsModel() {
 
 /*
  * Retrieves the current positions of all agents from the agent server.
+ * Contesta con todos los agentes que están en la simulación.
+ * Regresa toda la infomación de los agentes (id, pos en x,y,z)
+ * Aquí se debe de modificar si se requiere info extra
  */
 async function getAgents() {
     try {
@@ -69,6 +75,8 @@ async function getAgents() {
             //console.log("getAgents positions: ", result.positions)
 
             // Check if the agents array is empty
+            // Poner la visualización inicial de los agentes
+            // Se debe de cambiar esto para poder agregar nuevos agentes
             if (agents.length == 0) {
                 // Create new agents and add them to the agents array
                 for (const agent of result.positions) {
@@ -80,8 +88,9 @@ async function getAgents() {
                 // Log the agents array
                 //console.log("Agents:", agents);
 
-            } else {
+            } else { // Para iteraciones futuras, actualizar la posición
                 // Update the positions of existing agents
+                // Sincronización entre el objeto de Mesa y el de WebGL
                 for (const agent of result.positions) {
                     const current_agent = agents.find((object3d) => object3d.id == agent.id);
 
@@ -106,6 +115,7 @@ async function getAgents() {
 
 /*
  * Retrieves the current positions of all obstacles from the agent server.
+ * Obtiene la información de los obstáculos (id's, posiciones iniciales)
  */
 async function getObstacles() {
     try {
@@ -134,6 +144,7 @@ async function getObstacles() {
 
 /*
  * Updates the agent positions by sending a request to the agent server.
+ * Step del modelo y vuelve a llamar a GetAgents para ver sus nuevas posiciones
  */
 async function update() {
     try {

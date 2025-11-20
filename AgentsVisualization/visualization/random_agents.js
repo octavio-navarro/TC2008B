@@ -70,7 +70,10 @@ async function main() {
 
 
   // Initialize the scene
-  setupScene();
+  setupScene(); 
+
+  /* Primero se inicia el modelo, se obtienen las caracteríticas de cada modelo, 
+   y con esa información se dibuja la escena */
 
   // Position the objects in the scene
   setupObjects(scene, gl, colorProgramInfo);
