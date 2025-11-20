@@ -8,6 +8,7 @@ from randomAgents.model import RandomModel
 from randomAgents.agent import RandomAgent, ObstacleAgent
 
 # Size of the board:
+# Declarar variables globales cin características del agente y dónde se guarda el modelo
 number_agents = 10
 width = 28
 height = 28
@@ -15,6 +16,7 @@ randomModel = None
 currentStep = 0
 
 # This application will be used to interact with WebGL
+# Flask es una librería que permite hacer un servidor 
 app = Flask("Traffic example")
 cors = CORS(app, origins=['http://localhost'])
 
@@ -116,6 +118,7 @@ def getObstacles():
             return jsonify({"message": "Error with obstacle positions"}), 500
 
 # This route will be used to update the model
+# Hace el step del modelo
 @app.route('/update', methods=['GET'])
 @cross_origin()
 def updateModel():
