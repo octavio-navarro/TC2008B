@@ -14,7 +14,7 @@ from mesa.visualization.user_param import (
 from mesa.visualization.components import AgentPortrayalStyle
 
 # Variable para colorear los agentes de acuerdo a su estado
-COLORS = {"Cleanliness": "gray", "Roombas": "blue"}
+COLORS = {"Cleanliness": "gray", "Roombas": "blue", "Moves": "purple","Battery": "green"}
 
 # Indica cómo se mostrarán los agentes
 def random_portrayal(agent):
@@ -70,6 +70,7 @@ model_params = {
         "label": "Random Seed",
     },
     "num_agents": Slider("Number of Roombas", 4, 1, 50),
+    "num_dirt": Slider("Number of dirt", 4, 1, 100),
     "width": Slider("Grid width", 28, 1, 50),
     "height": Slider("Grid height", 28, 1, 50),
 }

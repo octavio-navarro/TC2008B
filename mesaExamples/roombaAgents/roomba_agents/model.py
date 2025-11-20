@@ -11,14 +11,14 @@ class RandomModel(Model):
         num_agents: Number of roombas in the simulation
         height, width: The size of the grid to model
     """
-    def __init__(self, num_agents=4, width=8, height=8, seed=42):
+    def __init__(self, num_agents=4, num_dirt = 40, width=8, height=8, seed=42):
 
         super().__init__(seed=seed)
         self.num_agents = num_agents
         self.seed = seed
         self.width = width
+        self.num_dirt = num_dirt
         self.height = height
-        self.num_dirt = 40
         self.num_obstacles = 8
 
         self.grid = OrthogonalMooreGrid([width, height], torus=False)
@@ -28,6 +28,9 @@ class RandomModel(Model):
             {
                 "Cleanliness": lambda m: self.count_type(m, "Dirt"),
                 "Roombas": lambda m: self.count_type(m, "Roombas"),
+                "Moves": lambda m: self.moves(m),
+                "Battery": lambda m: self.average_battery(m),
+
             }
         )
 
@@ -62,11 +65,27 @@ class RandomModel(Model):
 
     def step(self):
         '''Advance the model by one step.'''
-        self.agents.shuffle_do("step") # Hace de manera aleatoria el step de cada agente (más a doc a una simulación real)
         self.datacollector.collect(self) # Collect data
+        self.agents.shuffle_do("step") # Hace de manera aleatoria el step de cada agente (más a doc a una simulación real)
+        
 
     @staticmethod
-    def count_type(model, tree_condition):
+    def count_type(model, roomba_condition):
         """Helper method to count trees in a given condition in a given model."""
-        return len(model.agents.select(lambda x: x.condition == tree_condition))
+        return len(model.agents.select(lambda x: x.condition == roomba_condition))
 
+    @staticmethod
+    def moves(model):
+        """Get average moves from all roombas"""
+        roombas = model.agents.select(lambda x: isinstance(x, RoombaAgent))
+        if roombas:
+            return sum(roomba.moves for roomba in roombas) / len(roombas)
+        return 0
+
+    @staticmethod
+    def average_battery(model):
+        """Get average battery level of roombas"""
+        roombas = model.agents.select(lambda x: isinstance(x, RoombaAgent))
+        if roombas:
+            return sum(roomba.energy for roomba in roombas) / len(roombas)
+        return 0
