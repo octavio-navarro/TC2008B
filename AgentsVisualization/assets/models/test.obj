@@ -1,0 +1,10 @@
+# Test object
+# Vertices
+v 2 2 0
+v -2 2 0
+v 0 -2 0
+# Normals
+vn 0 0 1
+# Faces
+f 1//1 2//1 3//1
+
