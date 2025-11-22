@@ -1,54 +1,56 @@
-from agent import *
-from model import CityModel
-from mesa.visualization import CanvasGrid, BarChartModule
-from mesa.visualization import ModularServer
+from traffic_base.agent import *
+from traffic_base.model import CityModel
+
+from mesa.visualization import Slider, SolaraViz, make_space_component
+from mesa.visualization.components import AgentPortrayalStyle
+
 
 def agent_portrayal(agent):
-    if agent is None: return
-    
-    portrayal = {"Shape": "rect",
-                 "Filled": "true",
-                 "Layer": 1,
-                 "w": 1,
-                 "h": 1
-                 }
 
-    if (isinstance(agent, Road)):
-        portrayal["Color"] = "grey"
-        portrayal["Layer"] = 0
-    
-    if (isinstance(agent, Destination)):
-        portrayal["Color"] = "lightgreen"
-        portrayal["Layer"] = 0
+    if agent is None:
+        return
 
-    if (isinstance(agent, Traffic_Light)):
-        portrayal["Color"] = "red" if not agent.state else "green"
-        portrayal["Layer"] = 0
-        portrayal["w"] = 0.8
-        portrayal["h"] = 0.8
+    portrayal = AgentPortrayalStyle(
+        marker="s",
+    )
 
-    if (isinstance(agent, Obstacle)):
-        portrayal["Color"] = "cadetblue"
-        portrayal["Layer"] = 0
-        portrayal["w"] = 0.8
-        portrayal["h"] = 0.8
+    if isinstance(agent, Road):
+        portrayal.color = "#aaa"
+
+    if isinstance(agent, Destination):
+        portrayal.color = "lightgreen"
+
+    if isinstance(agent, Traffic_Light):
+        portrayal.color = "red" if not agent.state else "green"
+
+    if isinstance(agent, Obstacle):
+        portrayal.color = "#555"
 
     return portrayal
 
-width = 0
-height = 0
 
-with open('city_files/2022_base.txt') as baseFile:
-    lines = baseFile.readlines()
-    width = len(lines[0])-1
-    height = len(lines)
+def post_process(ax):
+    ax.set_aspect("equal")
 
-model_params = {"N":5}
 
-print(width, height)
-grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
+model_params = {
+    "N": 5,
+    "seed": {
+        "type": "InputText",
+        "value": 42,
+        "label": "Random Seed",
+    },
+}
 
-server = ModularServer(CityModel, [grid], "Traffic Base", model_params)
-                       
-server.port = 8521 # The default
-server.launch()
+model = CityModel(model_params["N"])
+
+space_component = make_space_component(
+    agent_portrayal, draw_grid=False, post_process=post_process
+)
+
+page = SolaraViz(
+    model,
+    components=[space_component],
+    model_params=model_params,
+    name="Random Model",
+)
