@@ -17,25 +17,6 @@ To run this visualization, you need two things running simultaneously:
 
 ---
 
-## Dependencies
-
-### Mesa flask server
-
-Activate the virtual environment with the 
-
-- Python
-- Mesa version 2.4.0: pip install mesa==2.4.0
-- Flask: pip install flask
-- Flask Cors: pip install flask_cors
-
-### Visualization server
-
-The following are installed when you use `npm i` inside of the **visualization** folder.
-
-- Lil-gui: lil-gui ^0.19.2
-- Twgl: twgl.js ^5.5.4
-- Vite: vite ^5.3.4
-
 ## Instructions to run the local server and the application
 
 ### Step 1: Start the Python Backend
@@ -68,4 +49,3 @@ npx vite
 - It should render a simple scene with cubes that are moving:
 
 ![RandomAgentSimulation](/docs/Images/Agent_visualization.png)
-
