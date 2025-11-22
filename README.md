@@ -55,7 +55,7 @@ We recommend using a Python virtual environment to manage dependencies. This kee
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/octavio-navarro/TC2008B.git](https://github.com/octavio-navarro/TC2008B.git)
+git clone https://github.com/octavio-navarro/TC2008B.git
 cd TC2008B
 ````
 
