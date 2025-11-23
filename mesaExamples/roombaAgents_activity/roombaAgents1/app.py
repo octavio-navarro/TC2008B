@@ -69,9 +69,9 @@ model_params = {
         "value": "42",
         "label": "Random Seed",
     },
-    "num_agents": Slider("Number of Roombas", 4, 1, 50),
-    "width": Slider("Grid width", 28, 1, 50),
-    "height": Slider("Grid height", 28, 1, 50),
+    "num_agents": Slider("Number of Roombas", 1, 1, 50),
+    "width": Slider("Grid width", 10, 1, 50),
+    "height": Slider("Grid height", 10, 1, 50),
 }
 
 page = SolaraViz(

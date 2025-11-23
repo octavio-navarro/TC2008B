@@ -86,6 +86,7 @@ class RandomModel(Model):
 
         if ((len(dirt_agents) == 0) or (self.steps >= 1000) or not roombas):
             self.running = False
+            print(f"Total dirt agents: {total_dirt_agents}")
             print_simulation_stats(self)
 
         self.agents.shuffle_do("step") # Hace de manera aleatoria el step de cada agente (más a doc a una simulación real)
