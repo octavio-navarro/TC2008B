@@ -3,10 +3,18 @@
  *
  * Miranda Urban Solano A01752391
  * noviembre 2025
+ * 
+ * Correr el archivo con:
+ *      node crearOBJ.js
+ * 
+ *      o
+ * 
+ *      node crearOBJ.js lados_circulo altura radio_base radio_cima
+ * 
  */
 
 'use strict';
-const fs = require('fs'); // Importar el módulo nativo del sistema de archivos
+const fs = require('fs'); // Módulo para trabajar con el sistema de archivos
 
 // Función para crear el objeto
 function crearObjeto(lados_circulo, altura, radio_base, radio_cima) {
@@ -17,11 +25,12 @@ function crearObjeto(lados_circulo, altura, radio_base, radio_cima) {
     // Calcular ángulo para los círculos
     let angleStep = 2 * Math.PI / lados_circulo;
     
-    // Vértices centrales (1: base, 2: cima)
+    //// Crear vértices (v)
+    // Vértices centrales
     vertices.push([0.0000, 0.0000, 0.0000]); // Base
     vertices.push([0.0000, altura, 0.0000]);  // Top
-    
-    // Crear vértices para la base
+
+    // Para la base
     for (let s = 0; s < lados_circulo; s++) {
         let angle = angleStep * s;
         let x = radio_base * Math.cos(angle);
@@ -29,7 +38,7 @@ function crearObjeto(lados_circulo, altura, radio_base, radio_cima) {
         vertices.push([x, 0.0000, z]);
     }
     
-    // Crear vértices para el top
+    // Para el top
     for (let s = 0; s < lados_circulo; s++) {
         let angle = angleStep * s;
         let x = radio_cima * Math.cos(angle);
@@ -37,11 +46,12 @@ function crearObjeto(lados_circulo, altura, radio_base, radio_cima) {
         vertices.push([x, altura, z]);
     }
     
-    // Normales para tapas
+    //// Crear vértices normales (vn)
+    // Para tapas
     normales.push([0.0000, -1.0000, 0.0000]); // Base (hacia abajo)
     normales.push([0.0000, 1.0000, 0.0000]);  // Top (hacia arriba)
     
-    // Crear normales para las caras laterales
+    // Para las caras laterales
     for (let s = 0; s < lados_circulo; s++) {
         let angle = angleStep * s;
         let nextAngle = angleStep * ((s + 1) % lados_circulo);
@@ -55,12 +65,12 @@ function crearObjeto(lados_circulo, altura, radio_base, radio_cima) {
         let tx = x2 - x1;
         let tz = z2 - z1;
         
-        // Vector desde base hasta arriba (considerando diferencia de radios)
+        // Vector desde base hasta arriba (considerando que la tapa y base pueden tener diferentes radios)
         let bx = x1 * (radio_base - radio_cima);
         let bz = z1 * (radio_base - radio_cima);
         let by = altura;
         
-        // Producto cruzado para obtener normal
+        // Producto cruz para obtener normal
         let nx = tz * by - bz * 0;
         let ny = 0 * bx - tx * by;
         let nz = tx * bz - tz * bx;
@@ -78,7 +88,7 @@ function crearObjeto(lados_circulo, altura, radio_base, radio_cima) {
         normales.push([nx, ny, nz]);
     }
     
-    // Crear caras
+    //// Crear caras (f)
     for (let s = 0; s < lados_circulo; s++) {
         let next_s = (s + 1) % lados_circulo;
         
@@ -94,22 +104,22 @@ function crearObjeto(lados_circulo, altura, radio_base, radio_cima) {
         let normalLateral1 = 3 + (s * 2);
         let normalLateral2 = 3 + (s * 2) + 1;
         
-        // Base -> triángulo desde el centro
+        // Base 
         caras.push([
             [base1, normalBase],
             [1, normalBase], 
             [base2, normalBase]
         ]);
         
-        // Top -> triángulo desde el centro
+        // Top
         caras.push([
             [top1, normalTop],
             [top2, normalTop],
             [2, normalTop]
         ]);
         
-        // Caras laterales
-        // Primer triángulo
+        // Caras laterales (dos tríangulos para completar la cara completa)
+        // Primer triángulo 
         caras.push([
             [base1, normalLateral1],
             [base2, normalLateral1],
