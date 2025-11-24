@@ -30,7 +30,7 @@ def agent_portrayal(agent):
     if (isinstance(agent, Obstacle)):
         portrayal["Color"] = "cadetblue"
         portrayal["Layer"] = 0
-        portrayal["w"] = 0.8
+        portrayal["w"] = 0.
         portrayal["h"] = 0.8
 
     return portrayal
