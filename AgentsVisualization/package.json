@@ -13,9 +13,7 @@
   "dependencies": {
     "lil-gui": "^0.19.2",
     "mocha": "^11.7.4",
-    "three": "^0.178.0",
     "twgl-base.js": "^5.5.3",
-    "twgl.js": "^5.5.4",
     "vite": "^7.1.12"
   }
 }
