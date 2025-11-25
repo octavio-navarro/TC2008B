@@ -45,7 +45,7 @@ const settings = {
 // Global variables
 let colorProgramInfo = undefined;
 let gl = undefined;
-const duration = 1000; // ms
+const duration = 10; // ms
 let elapsed = 0;
 let then = 0;
 
@@ -102,17 +102,6 @@ function setupObjects(scene, gl, programInfo) {
   // Create VAOs for the different shapes
   const baseCube = new Object3D(-1);
   baseCube.prepareVAO(gl, programInfo);
-
-  /*
-  // A scaled cube to use as the ground
-  const ground = new Object3D(-3, [14, 0, 14]);
-  ground.arrays = baseCube.arrays;
-  ground.bufferInfo = baseCube.bufferInfo;
-  ground.vao = baseCube.vao;
-  ground.scale = {x: 50, y: 0.1, z: 50};
-  ground.color = [0.6, 0.6, 0.6, 1];
-  scene.addObject(ground);
-  */
 
   // Copy the properties of the base objects
   for (const agent of agents) {

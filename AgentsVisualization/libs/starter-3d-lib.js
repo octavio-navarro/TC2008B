@@ -42,11 +42,6 @@ class V3 {
     static subtract(u, v, dest) {
         return [];
     }
-
-    // Multiply a vector by a scalar
-    static scale(u, s, dest) {
-        return [];
-    }
 }
 
 /*
@@ -98,8 +93,10 @@ class M4 {
 
         // The matrices are oriented transposed,
         // so the multiplication must be adjusted accordingly
-        return [
-        ];
+        return [ 1,  0,  0,  0,
+                 0,  1,  0,  0,
+                 0,  0,  1,  0,
+                 0,  0,  0,  1];
     }
 
     static identity() {
@@ -107,28 +104,42 @@ class M4 {
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
-            0, 0, 0, 1
-        ]
+            0, 0, 0, 1 ];
     }
 
     static translation(v) {
-        return [];
+        return [ 1,  0,  0,  0,
+                 0,  1,  0,  0,
+                 0,  0,  1,  0,
+                 0,  0,  0,  1];
     }
 
     static rotationX(angleRadians) {
-        return [];
+        return [ 1,  0,  0,  0,
+                 0,  1,  0,  0,
+                 0,  0,  1,  0,
+                 0,  0,  0,  1];
     }
 
     static rotationY(angleRadians) {
-        return [];
+        return [ 1,  0,  0,  0,
+                 0,  1,  0,  0,
+                 0,  0,  1,  0,
+                 0,  0,  0,  1];
     }
 
     static rotationZ(angleRadians) {
-        return [];
+        return [ 1,  0,  0,  0,
+                 0,  1,  0,  0,
+                 0,  0,  1,  0,
+                 0,  0,  0,  1];
     }
 
     static scale(v) {
-        return [];
+        return [ 1,  0,  0,  0,
+                 0,  1,  0,  0,
+                 0,  0,  1,  0,
+                 0,  0,  0,  1];
     }
 
     /**
@@ -441,11 +452,11 @@ class M4 {
      * a view matrix (a matrix which moves things in front of the camera)
      * take the inverse of this.
      *
-     * @param {v3} eye The position of the eye.
-     * @param {v3} target The position meant to be viewed.
-     * @param {v3} up A vector pointing up.
-     * @param {m4} [dst] matrix to hold result. If not passed a new one is created.
-     * @return {m4} The look-at matrix.
+     * @param {V3} eye The position of the eye.
+     * @param {V3} target The position meant to be viewed.
+     * @param {V3} up A vector pointing up.
+     * @param {M4} [dst] matrix to hold result. If not passed a new one is created.
+     * @return {M4} The look-at matrix.
      */
     static lookAt(eye, target, up, dst) {
         dst = dst || new Float32Array(16);
@@ -454,14 +465,14 @@ class M4 {
         let yAxis;
         let zAxis;
 
-        xAxis = xAxis || v3.create();
-        yAxis = yAxis || v3.create();
-        zAxis = zAxis || v3.create();
+        xAxis = xAxis || V3.create();
+        yAxis = yAxis || V3.create();
+        zAxis = zAxis || V3.create();
 
-        v3.normalize(
-            v3.subtract(eye, target, zAxis), zAxis);
-        v3.normalize(v3.cross(up, zAxis, xAxis), xAxis);
-        v3.normalize(v3.cross(zAxis, xAxis, yAxis), yAxis);
+        V3.normalize(
+            V3.subtract(eye, target, zAxis), zAxis);
+        V3.normalize(V3.cross(up, zAxis, xAxis), xAxis);
+        V3.normalize(V3.cross(zAxis, xAxis, yAxis), yAxis);
 
         dst[ 0] = xAxis[0];
         dst[ 1] = xAxis[1];

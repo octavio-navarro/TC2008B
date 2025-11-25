@@ -51,6 +51,13 @@ class M3 {
              0,  0,  1 ];
     }
 
+/*
+// Matrix guide:
+// Consider the rows and columns are transposed
+a00 a01 a02            b00 b01 b02
+a10 a11 a12            b10 b11 b12
+a20 a21 a22            b20 b21 b22
+*/
     static multiply(ma, mb) {
         // Get individual elements of the matrices
         const ma00 = ma[0 * 3 + 0];
@@ -73,13 +80,6 @@ class M3 {
         const mb21 = mb[2 * 3 + 1];
         const mb22 = mb[2 * 3 + 2];
 
-/*
-// Matrix guide:
-// Consider the rows and columns are transposed
-a00 a01 a02            b00 b01 b02
-a10 a11 a12            b10 b11 b12
-a20 a21 a22            b20 b21 b22
-*/
         return [
              1,  0,  0,
              0,  1,  0,

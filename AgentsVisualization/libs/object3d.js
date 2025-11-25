@@ -8,7 +8,7 @@
 import * as twgl from 'twgl-base.js';
 
 import { M4 } from '../libs/3d-lib';
-import { cubeVertexColors, cubeFaceColors } from '../libs/shapes';
+import { cubeFaceColors } from '../libs/shapes';
 import { loadObj } from '../libs/obj_loader';
 
 class Object3D {
@@ -17,7 +17,6 @@ class Object3D {
         rotation=[0, 0, 0],
         scale=[1, 1, 1],
         color=[Math.random(), Math.random(), Math.random(), 1.0]) {
-
         this.id = id;
         // Initial transformations
         this.position = {
@@ -76,7 +75,6 @@ class Object3D {
     prepareVAO(gl, programInfo, objData) {
         if (objData == undefined) {
             // Using a default cube
-            //this.arrays = cubeVertexColors(1);
             this.arrays = cubeFaceColors(1);
         } else {
             // Or using an obj file
